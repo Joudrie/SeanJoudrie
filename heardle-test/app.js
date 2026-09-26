@@ -184,6 +184,7 @@ let playlists = []; // Spotify's library order: most recently created or saved f
 
 async function openLibrary() {
   showError('');
+  $('library-note').hidden = true;
   if (!Spotify.isLoggedIn()) {
     try { sessionStorage.setItem('sg-after-login', 'library'); } catch {}
     await Spotify.login();
@@ -192,7 +193,23 @@ async function openLibrary() {
   show('s-library');
   if (playlists.length) { renderLibrary(); return; }
   $('pick-status').textContent = 'Loading your playlists…';
-  if (!me) me = await Spotify.me();
+  if (!me) {
+    try {
+      me = await Spotify.me();
+    } catch (e) {
+      if (e.status !== 403) throw e;
+      // Signed in, but Spotify refuses this account: while the app is in
+      // Development Mode only accounts on its tester list get through.
+      // Sign out so they aren't stuck, and point them at links instead.
+      Spotify.logout();
+      $('pick-status').textContent = '';
+      backHome();
+      $('library-note').textContent = 'Spotify won’t let this account in yet: Song Guess is still a test, and only accounts on its tester list can sign in. Ask Sean to add the email your Spotify account uses. Until then, paste a playlist link below; that works without signing in.';
+      $('library-note').hidden = false;
+      $('link').focus({ preventScroll: true });
+      return;
+    }
+  }
   $('who').textContent = 'Connected as ' + (me.display_name || me.id) + '. Tap a playlist to add it to your reserves; tap again to take it out.';
   playlists = await Spotify.playlists((n, total) => {
     $('pick-status').textContent = 'Loading your playlists… ' + n + ' of ' + total;
