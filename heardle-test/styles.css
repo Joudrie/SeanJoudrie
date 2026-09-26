@@ -49,6 +49,7 @@
   --accent: #ffd23f;   /* stage light */
   --wrong: #ff6b5e;
   --on-accent: #0b0c0f;
+  --spotify: #1ed760;  /* Spotify's own green, only on the Spotify button */
   --focus: #7aa7ff;
   color-scheme: dark;
 }
@@ -187,6 +188,8 @@ body:has(#s-home:not([hidden])) { padding-bottom: var(--s-24); }
 .btn--primary:hover:not(:disabled) { background: var(--ink); }
 .btn--quiet { background: transparent; color: var(--ink); border-color: var(--line); }
 .btn--quiet:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.btn--spotify { background: var(--spotify); color: var(--on-accent); }
+.btn--spotify:hover:not(:disabled) { background: var(--ink); }
 .btn--small { min-height: var(--s-8); padding: 0 var(--s-3); font-size: var(--t-xs); justify-self: start; }
 .btn--block { width: 100%; }
 .btn--big { min-height: var(--s-16); font: 800 var(--t-h2) / 1 var(--display); letter-spacing: 0.02em; }
