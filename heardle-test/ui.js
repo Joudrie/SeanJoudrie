@@ -37,7 +37,7 @@ const UI = (() => {
         return;
       }
     }
-    if (ctx.state === 'suspended') ctx.resume();
+    if (ctx.state !== 'running') ctx.resume().catch(() => {});
   }
 
   // One 0–1 level per frame, processed the way cava does it: only the useful
@@ -230,13 +230,14 @@ const UI = (() => {
     o.stop(t + dur + 0.02);
   }
 
-  // Returns how long the sound lasts, so the clip can wait for it.
+  // Plays at the same moment the clip starts (the clip has to start inside
+  // the tap), so these stay short and quiet.
   function sound(kind) {
     if (muted || !ctx) return 0;
-    if (ctx.state === 'suspended') ctx.resume();
-    if (kind === 'right') { tone(784, 0, 0.12); tone(1175, 0.09, 0.18); return 260; }
-    if (kind === 'wrong') { tone(196, 0, 0.16, 'triangle', 0.06); return 180; }
-    if (kind === 'skip') { tone(523, 0, 0.07, 'sine', 0.035); return 90; }
+    if (ctx.state !== 'running') ctx.resume().catch(() => {});
+    if (kind === 'right') { tone(784, 0, 0.12, 'sine', 0.035); tone(1175, 0.09, 0.18, 'sine', 0.035); return 260; }
+    if (kind === 'wrong') { tone(196, 0, 0.16, 'triangle', 0.04); return 180; }
+    if (kind === 'skip') { tone(523, 0, 0.07, 'sine', 0.025); return 90; }
     return 0;
   }
 

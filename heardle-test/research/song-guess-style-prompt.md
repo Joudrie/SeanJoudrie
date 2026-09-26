@@ -93,7 +93,7 @@ RGB channel splits, scanlines and CRT bloom on every title. One restrained use c
 ### 5. Sound as part of the interface
 
 - Three short, quiet effects for right, wrong and skip, from CC0 sources (freesound) or synthesised in about 20 lines of Web Audio.
-- They play only in response to a tap, respect a mute toggle, and never overlap the clip.
+- They play only in response to a tap and respect a mute toggle. They start together with the clip, because phones only allow audio to start directly inside a tap (a clip started after a delay silently fails on iOS), so they stay short and quiet.
 
 ## SECTION 3. THE MOTION LANGUAGE
 
@@ -232,7 +232,7 @@ Right, wrong and skip:
 - A wrong guess fills its row with the wrong colour, keeps the guess text readable, and changes colour over 120ms, with no shake.
 - A skip fills grey and reads "Skipped".
 - A right guess floats "+N" up from the score over 600ms. Ramp the row colour from the accent at 1 second toward muted at 16 seconds.
-- Play three short, quiet right/wrong/skip sounds (CC0 or synthesised, respecting a mute toggle) only on taps, never over the clip.
+- Play three short, quiet right/wrong/skip sounds (CC0 or synthesised, respecting a mute toggle) only on taps. Start every clip directly inside the tap handler, never after a timer or delay: phones (iOS especially) block audio that starts outside a tap.
 
 Lists:
 - Lists render instantly. Rows animate only when the player adds or removes one.
