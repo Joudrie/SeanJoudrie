@@ -40,7 +40,7 @@ Serve the folder (`python3 -m http.server 8000`) and add `http://127.0.0.1:8000/
 
 The style comes from `research/song-guess-style-prompt.md` (built from the Codex research in `research/codex-ui-motion.md`):
 - **Palette:** a late-night stage: near-black, one stage-light yellow, coral for wrong. All pass WCAG AA.
-- **Type:** Big Shoulders Display for anything that shouts, JetBrains Mono for everything else.
+- **Type:** Big Shoulders Display for anything that shouts, Instrument Sans for everything else.
 - **Shape:** a 4px spacing scale, one radius, borders instead of shadows.
 
 Motion runs only on a tap or while a clip the player started is playing, and none of it runs under `prefers-reduced-motion`.
