@@ -12,7 +12,7 @@ It sits on top of `docs/vibe-coded-websites-report.md`, which still applies in f
 
 **The direction this report commits to.** The research pointed to three directions: *Sound made visible*, *Tape deck*, and *Data as type*. This report combines them rather than picking one:
 
-- **Base:** the Codex notebook system (paper, ink, one accent, mono labels).
+- **Base:** a late-night stage look (near-black, one stage-light yellow, gig-poster type). An earlier paper-and-ink version was dropped.
 - **Signature moments:** the listening meter, the spring-loaded tape counter, the decrypting title, the iris reveal and the halftone cover.
 - **Optional:** the sand field and the melting cover, built only if they hold 60 fps on a mid-range phone.
 
@@ -55,27 +55,33 @@ RGB channel splits, scanlines and CRT bloom on every title. One restrained use c
 
 ## SECTION 2. THE SONG GUESS SYSTEM
 
-### 1. Palette: paper, ink, one accent
+### 1. Palette: late-night stage
 
-- **Base:** warm paper `#f5f4f0` and near-black ink `#16171b`, with a true dark mode (`#0e0f12`). This is the same family as Codex, so your projects read as one studio.
-- **Accent:** exactly one warm accent, chosen with poline (an arc away from green and purple) and solved with Leonardo so that every text use passes WCAG AA in both light and dark.
-- **Semantic colours:** right, wrong and skip are derived the same way, and must stay distinct under Night Shift (the Ember method). Wrong is never the same hue as the accent.
-- **Total:** no more than 6 colour tokens per theme, plus their text-on variants.
+*Revised after the first build: the paper-and-ink version read as a notebook, not a music game, and it isn't tied to any other project.*
 
-### 2. Type: one mono, one sans
+- **Background:** a near-black room `#0b0c0f` with a static film grain drawn once (never animated), and surfaces `#15171c`.
+- **Accent:** one stage-light yellow `#ffd23f`, used for what matters: the play control, the meter, the selected reserves, the score and the answer.
+- **Semantic colours:**
+  - wrong is coral `#ff6b5e`;
+  - skip is muted grey `#9aa0ab`;
+  - text is `#f4f1ea`.
+- **Contrast** on the background: text 17:1, yellow 13.5:1, coral 7:1, grey 7.4:1. Text on yellow is the background colour.
+- **Theme:** dark only. It's a game you play at night.
 
-- IBM Plex Mono for the wordmark, labels, counters, the clip meter's numbers and the score.
-- IBM Plex Sans for body text, song titles and suggestions.
-- A fixed ramp (for example 12 / 14 / 17 / 20 / 28 / 40), with no sizes outside it.
-- Numbers that change use tabular figures, so they don't jiggle.
-- Micro-labels are uppercase mono with slight tracking.
-- Text inputs are at least 16px, so iOS doesn't zoom in.
+### 2. Type: gig poster plus tape counter
+
+- **Big Shoulders Display** (800, uppercase, tight leading) for anything that shouts: the wordmark, headlines, playlist and song titles, the play label, the result and the score.
+- **JetBrains Mono** for everything else: body text, labels, buttons, counters and the meter's seconds.
+- **Ramp:** 12 / 14 / 16 / 28 / 44 / 64, plus 96 for the final score.
+- **Numbers:** tabular figures for anything that changes.
+- **Inputs:** 16px, so iOS doesn't zoom in.
+- Both fonts are OFL.
 
 ### 3. Shape and depth
 
 - **Spacing:** a 4px scale for every margin, padding and gap.
-- **Radius:** one radius token for every box. The only exception is a true circle, used for the play control or a disc.
-- **Depth:** a 1px border is the elevation. No drop shadows, no glows. Selected items invert (an ink fill with paper text), like Codex chips.
+- **Radius:** one 4px radius token for every box. The only exception is a true circle, used for the play control.
+- **Depth:** a 1px border is the elevation. No drop shadows, no glows. Selected items light up in the stage yellow, with dark text.
 - **Layout:** one container width, so left edges line up on every screen.
 
 ### 4. Iconography and mark
@@ -114,7 +120,7 @@ RGB channel splits, scanlines and CRT bloom on every title. One restrained use c
   - a thin row of bars, or a small note-axis spectrogram, from a Web Audio `AnalyserNode`;
   - smoothed the cava way (band-limit to about 50 Hz–10 kHz, log spread, gradual fall-off) so it looks calm, not jittery;
   - driven by clubber-style bands that rise fast and fall slowly on the kick.
-- The meter's numbers are Plex Mono tabular figures.
+- The meter's numbers are JetBrains Mono tabular figures.
 - **Tech note:** Deezer's clip CDN sends `access-control-allow-origin: *` (verified), so set `audio.crossOrigin = "anonymous"` before `src`, route the element through one `AudioContext` created on the first tap, and reuse that context.
 
 ### Signature moment 2: the play button that plays
@@ -126,7 +132,7 @@ RGB channel splits, scanlines and CRT bloom on every title. One restrained use c
 
 - The answer screen irises out from the button the player tapped (`clip-path: circle()` growing to `1.42 × 100vmax` from the tap point; CSS only).
 - The song title decrypts: unrevealed letters cycle through characters taken from the title itself for about 400ms, then settle left to right. That's about 30 lines of vanilla JS (after react-bits DecryptedText / GSAP ScrambleText). The real title is set as the accessible name from the first frame.
-- The cover arrives as a two-colour halftone in ink and accent, then resolves to full colour. Dithering is done once per cover on a canvas (DPaint-js / Dither3D idea), not in a render loop.
+- The cover arrives as a two-colour halftone in black and stage yellow, then resolves to full colour. Dithering is done once per cover on a canvas (DPaint-js / Dither3D idea), not in a render loop.
 - The result line ("Got it in 2 seconds.") uses the accent. The seconds number counts up once.
 
 ### Signature moment 4: right, wrong, skip
@@ -171,7 +177,7 @@ If any of these are true, it isn't done.
 - Frosted or translucent panels
 - A blurred cover used as the page background
 - Emoji anywhere
-- More than one accent colour, or a font outside Plex Mono and Plex Sans
+- More than one accent colour, or a font outside Big Shoulders Display and JetBrains Mono
 
 **Motion**
 - Anything moves while no clip is playing and nothing was tapped
@@ -200,7 +206,7 @@ If any of these are true, it isn't done.
 
 You are a senior product designer and front-end engineer. You are overhauling the UI and motion of Song Guess, a mobile-first web game at `heardle-test/` in this repo. Players save Spotify playlists as "reserves", mix them, and guess each song from a clip that grows 1s, 2s, 4s, 7s, 11s, 16s. The stack is plain HTML, CSS and vanilla JS with no build step, deployed to GitHub Pages. Do not change how the game works (`spotify.js`, `clips.js`, `reserves.js` and the game logic in `app.js`); change how it looks, moves and sounds. Read `docs/vibe-coded-websites-report.md` and `heardle-test/research/codex-ui-motion.md` first. Everything in the vibe-coded report still applies.
 
-The brand idea is that the game is about listening, so the interface visibly listens, and everything else stays quiet. The base is a notebook system shared with the Codex site. Warm paper `#f5f4f0` and ink `#16171b`, with a real dark mode. Exactly one warm accent that is neither green nor purple: pick it with poline and solve it with Leonardo so every text use passes WCAG AA in light and dark. Derive right, wrong and skip colours the same way and keep them distinct under Night Shift. No more than six colour tokens per theme. Use IBM Plex Mono for the wordmark, labels, counters and score, and IBM Plex Sans for body text and song titles. Use one fixed type ramp and tabular figures for changing numbers. Use a 4px spacing scale everywhere and one radius token (true circles only for the play control). A 1px border is the only elevation: no shadows, no glows. Selected items invert to ink. Standard icons are inlined Lucide SVGs at one stroke weight, sized to their text. Draw the wordmark and app icon on a Dotgrid grid and ship them as static SVG. No emoji anywhere.
+The brand idea is that the game is about listening, so the interface visibly listens, and everything else stays quiet. The look is a late-night stage: a near-black room `#0b0c0f` with a static film grain, surfaces `#15171c`, and one stage-light yellow accent `#ffd23f`. Wrong is coral `#ff6b5e`, skip is grey `#9aa0ab`, and text is `#f4f1ea`. All pass WCAG AA on the background. Use Big Shoulders Display (800, uppercase) for anything that shouts (wordmark, headlines, titles, play label, result, score) and JetBrains Mono for everything else. Use one fixed type ramp and tabular figures for changing numbers. Use a 4px spacing scale everywhere and one 4px radius (true circles only for the play control). A 1px line is the only depth: no shadows, no glows. Selected items light up yellow with dark text. Standard icons are inlined Lucide SVGs at one stroke weight, sized to their text. The mark is six bars at the six clip lengths, as static SVG. No emoji anywhere.
 
 Motion follows two rules. It happens only in direct response to a tap, or while a clip the player started is playing, driven by that clip's real audio. Under `prefers-reduced-motion`, nothing moves: add a global switch that turns off every transition, and show the meter as a static level. Use three timing tokens: 120ms feedback, 200ms enter, 480ms reveal. Use one ease-out curve (`cubic-bezier(.2,.8,.2,1)`) and one spring, reserved for the meter. Nothing lifts, tilts, bounces or scales on hover. No idle loops, no animated backgrounds, no stagger cascades on first load.
 
@@ -219,7 +225,7 @@ The play control:
 The reveal:
 - The answer screen irises out from the tapped button with `clip-path: circle()` growing to `1.42 × 100vmax`.
 - The title decrypts over about 400ms, cycling characters from the title itself and settling left to right. The real title is the accessible name from the first frame.
-- The cover arrives as a two-colour ink-and-accent halftone, dithered once on a canvas, then resolves to full colour.
+- The cover arrives as a two-colour black-and-yellow halftone, dithered once on a canvas, then resolves to full colour.
 - "Got it in N seconds." uses the accent, and N counts up once.
 
 Right, wrong and skip:

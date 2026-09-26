@@ -287,7 +287,7 @@ const UI = (() => {
     requestAnimationFrame(step);
   }
 
-  // The cover first appears as a two-colour halftone in ink and accent
+  // The cover first appears as a two-colour halftone in black and stage yellow
   // (ordered Bayer dither, done once on a small canvas), then resolves to the
   // real image. If the image won't allow reading its pixels, it just shows.
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
@@ -302,8 +302,8 @@ const UI = (() => {
       canvasEl.width = canvasEl.height = S;
       c.drawImage(img, 0, 0, S, S);
       const d = c.getImageData(0, 0, S, S);
-      const dark = hex(css('--ink').length === 7 ? css('--ink') : '#16171b');
-      const light = hex(css('--accent').length === 7 ? css('--accent') : '#c07814');
+      const dark = hex(css('--bg').length === 7 ? css('--bg') : '#0b0c0f');
+      const light = hex(css('--accent').length === 7 ? css('--accent') : '#ffd23f');
       for (let y = 0; y < S; y++) {
         for (let x = 0; x < S; x++) {
           const p = (y * S + x) * 4;
