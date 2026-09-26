@@ -152,6 +152,8 @@ body:has(#s-home:not([hidden])) { padding-bottom: var(--s-24); }
   padding: var(--s-4);
 }
 .stack { display: grid; gap: var(--s-4); }
+.divider { display: flex; align-items: center; gap: var(--s-3); font: 600 var(--t-xs) / 1 var(--text); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .row { display: flex; justify-content: space-between; align-items: center; gap: var(--s-4); }
 .actions { display: flex; gap: var(--s-3); }
 
