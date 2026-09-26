@@ -8,7 +8,9 @@ Guess songs from Spotify playlists, one clip at a time. Save playlists to your *
 - **By link** (no sign-in needed): paste any public playlist's link (`open.spotify.com/playlist/…`, a `spotify.link/…` share link, or a `spotify:playlist:` URI). It loads the first 100 songs; your own playlists load in full when you're signed in.
 - **Why 100:** Spotify's API only returns a playlist's songs to its owner or a collaborator. For anyone else's playlist, the game reads Spotify's public embed page, which lists the first 100 songs. The reserve says "100 of 155" and explains the workaround: in Spotify, add the playlist to a new playlist of your own, then add that copy from your library.
 
-Reserves are saved on the device (`localStorage`) with their songs, so they don't reload each time. "Update songs" re-reads a playlist that changed.
+Reserves are saved on the device (`localStorage`) with their songs, so they don't reload each time.
+
+**Cycling the 5 Spotify sign-in spots:** a friend's full playlists stay saved on their device after they're taken off the tester list, so spots can be reused: add them under Settings → User Management, they sign in and add their playlists, then remove them. "Update songs" never replaces a full saved list with the first-100 version; if Spotify refuses the account, the saved list is kept and the page says why. "Update songs" re-reads a playlist that changed.
 
 Live at https://seanjoudrie.github.io/SeanJoudrie/heardle-test/. It stays at this address because it's the redirect URI saved in the Spotify app.
 
