@@ -13,18 +13,17 @@
     <meta property="og:image" content="https://seanjoudrie.github.io/SeanJoudrie/heardle-test/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Song Guess wordmark with six amber bars rising at 1, 2, 4, 7, 11 and 16 seconds on warm paper." />
+    <meta property="og:image:alt" content="Song Guess: name it in one second. Yellow bars rising at 1, 2, 4, 7, 11 and 16 seconds on a black stage." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="robots" content="noindex" />
-    <meta name="theme-color" content="#f5f4f0" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0e0f12" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#0b0c0f" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Fonts load without blocking the first paint; system fonts show until they arrive. -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;600&display=swap" />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-    <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet" /></noscript>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800&family=JetBrains+Mono:wght@400;600;700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" /></noscript>
     <link rel="stylesheet" href="styles.css?v=dev" />
   </head>
   <body>
@@ -33,8 +32,8 @@
         <a class="wordmark" href="./" aria-label="Song Guess, home">
           <!-- The mark: six bars at the six clip lengths, 1 2 4 7 11 16. -->
           <svg class="wordmark__mark" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-            <rect width="24" height="24" rx="5" fill="var(--ink)" />
-            <g fill="var(--accent)">
+            <rect width="24" height="24" rx="4" fill="var(--accent)" />
+            <g fill="var(--on-accent)">
               <rect x="3.5" y="17.5" width="2" height="1.5" />
               <rect x="6.5" y="16.75" width="2" height="2.25" />
               <rect x="9.5" y="15.25" width="2" height="3.75" />
@@ -56,7 +55,7 @@
       <!-- Reserves: the playlists saved to play with -->
       <section id="s-home" class="screen" hidden>
         <p class="eyebrow">Early test</p>
-        <h1>Name the song from one second of it</h1>
+        <h1>Name it in <em>one second</em></h1>
         <p class="lede">Save playlists, yours or anyone’s public ones, then play one or mix several. Every wrong guess or skip plays a little more: 1, 2, 4, 7, 11, then 16 seconds.</p>
 
         <div class="card stack">
@@ -137,7 +136,7 @@
           </div>
           <div class="play">
             <button id="clip-btn" class="play__btn" type="button" aria-describedby="clip-label">
-              <svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true">
+              <svg viewBox="0 0 48 48" aria-hidden="true">
                 <circle class="play__track" cx="24" cy="24" r="22" />
                 <circle class="play__ring" cx="24" cy="24" r="22" />
                 <g transform="translate(12 12)"><path class="play__icon" d="M9 6.5L18.5 12L18.5 12L9 17.5Z" /></g>
@@ -178,7 +177,7 @@
         </div>
         <div class="card reveal">
           <div class="cover">
-            <img id="reveal-cover" class="cover__img" alt="" width="96" height="96" crossorigin="anonymous" />
+            <img id="reveal-cover" class="cover__img" alt="" width="112" height="112" crossorigin="anonymous" />
             <canvas id="reveal-halftone" class="cover__halftone" aria-hidden="true" hidden></canvas>
           </div>
           <div class="reveal__text">
@@ -215,7 +214,7 @@
     </main>
 
     <footer class="container footer">
-      <p>Song Guess, an early test by Sean Joudrie. Playlists come from Spotify and clips from Deezer; not made or endorsed by either. Icons from Lucide (ISC).</p>
+      <p>Song Guess, an early test by Sean Joudrie. Playlists come from Spotify and clips from Deezer; not made or endorsed by either. Icons from Lucide (ISC). Type: Big Shoulders Display and JetBrains Mono (OFL).</p>
     </footer>
 
     <script src="spotify.js?v=dev"></script>
