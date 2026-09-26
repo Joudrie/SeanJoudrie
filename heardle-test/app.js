@@ -136,13 +136,34 @@ async function refreshReserve(r) {
   showError('');
   busy.set(r.id, 'Updating…');
   renderHome();
+  const kept = (why) => showError('Kept your saved ' + r.songs.length + ' songs of “' + r.name + '”. ' + why);
   try {
-    if (Spotify.isLoggedIn() && !me) me = await Spotify.me();
+    if (Spotify.isLoggedIn() && !me) {
+      try {
+        me = await Spotify.me();
+      } catch (e) {
+        // Taken off the tester list since signing in: carry on signed out.
+        if (e.status !== 403) throw e;
+        Spotify.logout();
+      }
+    }
     const fresh = await Reserves.refresh(r, me, (n, total) => { busy.set(r.id, 'Updating… ' + n + ' of ' + total); renderHome(); });
+    // Never swap a full saved list for the first-100 version from the public
+    // page (what a signed-out update of your own playlist gets).
+    if (r.full && !fresh.full && fresh.songs.length < r.songs.length) {
+      kept(Spotify.isLoggedIn()
+        ? 'Spotify only showed the first ' + fresh.songs.length + '.'
+        : 'Updating the full list needs a Spotify sign-in; without one, Spotify only shows the first ' + fresh.songs.length + '.');
+      return;
+    }
     fresh.addedAt = r.addedAt;
     Reserves.put(fresh);
   } catch (e) {
-    showError(e.status ? Spotify.explain(e) : e.message);
+    if (e.status === 403) {
+      Spotify.logout();
+      me = null;
+      kept('This account can’t reach Spotify right now (it isn’t on the game’s tester list), so the saved list stays as it is.');
+    } else showError(e.status ? Spotify.explain(e) : e.message);
   } finally {
     busy.delete(r.id);
     renderHome();
