@@ -473,8 +473,6 @@ async function playFor(seconds) {
   }
 }
 
-// Waits for a right/wrong/skip sound to finish, so it never plays over the clip.
-const after = (ms) => new Promise((r) => setTimeout(r, ms));
 
 audio.addEventListener('waiting', () => { if (onGame()) $('clip-status').textContent = 'Loading the clip…'; });
 audio.addEventListener('playing', () => { $('clip-status').textContent = ''; });
@@ -567,9 +565,9 @@ function isRight(text) {
   return Text.norm(Text.clean(typed)) === Text.norm(Text.clean(song.title));
 }
 
-async function advance(kind, text) {
+function advance(kind, text) {
   game.attempts.push({ kind, text });
-  const wait = UI.sound(kind);
+  UI.sound(kind);
   if (game.stage >= STAGES.length - 1) { reveal(false); return; }
   game.stage++;
   $('guess').value = '';
@@ -577,10 +575,13 @@ async function advance(kind, text) {
   $('suggest').replaceChildren();
   stopAudio();
   renderRound();
-  // Wrong guesses and skips were tapped, so the longer clip can play now,
-  // right after the short sound.
-  await after(wait);
-  if (onGame()) playFor(STAGES[game.stage]);
+  // Start the longer clip right here, inside the tap. Phones (iOS above all)
+  // only let a page start audio directly from a tap; starting it after a
+  // timer, as this used to, silently failed.
+  const secs = STAGES[game.stage];
+  playFor(secs).then((ok) => {
+    if (!ok && onGame()) $('clip-status').textContent = 'Tap Play to hear ' + plural(secs, 'second', 'seconds') + '.';
+  });
 }
 
 $('guess-form').addEventListener('submit', (e) => {
@@ -625,7 +626,7 @@ function reveal(won) {
   game.played++;
   const s = game.song;
   const secs = STAGES[game.stage];
-  const wait = UI.sound(won ? 'right' : 'wrong');
+  UI.sound(won ? 'right' : 'wrong');
   stopAudio();
   if (won) {
     game.correct++;
@@ -673,12 +674,9 @@ function reveal(won) {
   renderScore();
   UI.iris($('s-reveal'), from.x, from.y);
   if (won) UI.floatPoints($('reveal-score').parentElement, POINTS[game.stage]);
-  // Play the full clip as the answer, after the short sound; this follows
-  // the tap on Guess or Skip.
-  after(wait).then(() => {
-    if ($('s-reveal').hidden) return;
-    playFor(30).then((ok) => { if (ok) $('reveal-play-label').textContent = 'Pause'; });
-  });
+  // Play the full clip as the answer, started inside the tap on Guess or
+  // Skip (see advance()).
+  playFor(30).then((ok) => { if (ok && !$('s-reveal').hidden) $('reveal-play-label').textContent = 'Pause'; });
 }
 
 $('reveal-play').addEventListener('click', async () => {
