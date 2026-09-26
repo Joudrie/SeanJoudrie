@@ -71,7 +71,7 @@ RGB channel splits, scanlines and CRT bloom on every title. One restrained use c
 ### 2. Type: gig poster plus tape counter
 
 - **Big Shoulders Display** (800, uppercase, tight leading) for anything that shouts: the wordmark, headlines, playlist and song titles, the play label, the result and the score.
-- **JetBrains Mono** for everything else: body text, labels, buttons, counters and the meter's seconds.
+- **Instrument Sans** for everything else: body text, labels, buttons, counters and the meter's seconds.
 - **Ramp:** 12 / 14 / 16 / 28 / 44 / 64, plus 96 for the final score.
 - **Numbers:** tabular figures for anything that changes.
 - **Inputs:** 16px, so iOS doesn't zoom in.
@@ -120,7 +120,7 @@ RGB channel splits, scanlines and CRT bloom on every title. One restrained use c
   - a thin row of bars, or a small note-axis spectrogram, from a Web Audio `AnalyserNode`;
   - smoothed the cava way (band-limit to about 50 Hz–10 kHz, log spread, gradual fall-off) so it looks calm, not jittery;
   - driven by clubber-style bands that rise fast and fall slowly on the kick.
-- The meter's numbers are JetBrains Mono tabular figures.
+- The meter's numbers are Instrument Sans tabular figures.
 - **Tech note:** Deezer's clip CDN sends `access-control-allow-origin: *` (verified), so set `audio.crossOrigin = "anonymous"` before `src`, route the element through one `AudioContext` created on the first tap, and reuse that context.
 
 ### Signature moment 2: the play button that plays
@@ -177,7 +177,7 @@ If any of these are true, it isn't done.
 - Frosted or translucent panels
 - A blurred cover used as the page background
 - Emoji anywhere
-- More than one accent colour, or a font outside Big Shoulders Display and JetBrains Mono
+- More than one accent colour, or a font outside Big Shoulders Display and Instrument Sans
 
 **Motion**
 - Anything moves while no clip is playing and nothing was tapped
@@ -206,7 +206,7 @@ If any of these are true, it isn't done.
 
 You are a senior product designer and front-end engineer. You are overhauling the UI and motion of Song Guess, a mobile-first web game at `heardle-test/` in this repo. Players save Spotify playlists as "reserves", mix them, and guess each song from a clip that grows 1s, 2s, 4s, 7s, 11s, 16s. The stack is plain HTML, CSS and vanilla JS with no build step, deployed to GitHub Pages. Do not change how the game works (`spotify.js`, `clips.js`, `reserves.js` and the game logic in `app.js`); change how it looks, moves and sounds. Read `docs/vibe-coded-websites-report.md` and `heardle-test/research/codex-ui-motion.md` first. Everything in the vibe-coded report still applies.
 
-The brand idea is that the game is about listening, so the interface visibly listens, and everything else stays quiet. The look is a late-night stage: a near-black room `#0b0c0f` with a static film grain, surfaces `#15171c`, and one stage-light yellow accent `#ffd23f`. Wrong is coral `#ff6b5e`, skip is grey `#9aa0ab`, and text is `#f4f1ea`. All pass WCAG AA on the background. Use Big Shoulders Display (800, uppercase) for anything that shouts (wordmark, headlines, titles, play label, result, score) and JetBrains Mono for everything else. Use one fixed type ramp and tabular figures for changing numbers. Use a 4px spacing scale everywhere and one 4px radius (true circles only for the play control). A 1px line is the only depth: no shadows, no glows. Selected items light up yellow with dark text. Standard icons are inlined Lucide SVGs at one stroke weight, sized to their text. The mark is six bars at the six clip lengths, as static SVG. No emoji anywhere.
+The brand idea is that the game is about listening, so the interface visibly listens, and everything else stays quiet. The look is a late-night stage: a near-black room `#0b0c0f` with a static film grain, surfaces `#15171c`, and one stage-light yellow accent `#ffd23f`. Wrong is coral `#ff6b5e`, skip is grey `#9aa0ab`, and text is `#f4f1ea`. All pass WCAG AA on the background. Use Big Shoulders Display (800, uppercase) for anything that shouts (wordmark, headlines, titles, play label, result, score) and Instrument Sans for everything else. Use one fixed type ramp and tabular figures for changing numbers. Use a 4px spacing scale everywhere and one 4px radius (true circles only for the play control). A 1px line is the only depth: no shadows, no glows. Selected items light up yellow with dark text. Standard icons are inlined Lucide SVGs at one stroke weight, sized to their text. The mark is six bars at the six clip lengths, as static SVG. No emoji anywhere.
 
 Motion follows two rules. It happens only in direct response to a tap, or while a clip the player started is playing, driven by that clip's real audio. Under `prefers-reduced-motion`, nothing moves: add a global switch that turns off every transition, and show the meter as a static level. Use three timing tokens: 120ms feedback, 200ms enter, 480ms reveal. Use one ease-out curve (`cubic-bezier(.2,.8,.2,1)`) and one spring, reserved for the meter. Nothing lifts, tilts, bounces or scales on hover. No idle loops, no animated backgrounds, no stagger cascades on first load.
 
