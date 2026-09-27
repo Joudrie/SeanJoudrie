@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inside Jokes</title>
+    <meta name="description" content="A Connections-style puzzle made from your friend group's jokes. Write four groups of four, send the link, and see who actually knows the lore." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Inside Jokes" />
+    <meta property="og:title" content="Inside Jokes: Connections, made of your group's lore" />
+    <meta property="og:description" content="Sixteen words only your friends will get. Find the four groups of four." />
+    <meta property="og:url" content="https://seanjoudrie.github.io/SeanJoudrie/inside-jokes/" />
+    <meta property="og:image" content="https://seanjoudrie.github.io/SeanJoudrie/inside-jokes/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Inside Jokes: a four-by-four grid of word tiles, with the top row solved in yellow." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Libre+Franklin:wght@400;600;700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Libre+Franklin:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Libre+Franklin:wght@400;600;700&display=swap" rel="stylesheet" /></noscript>
+    <link rel="stylesheet" href="styles.css?v=dev" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="wordmark" href="./" aria-label="Inside Jokes, home">
+          <!-- The mark: a four-by-four board with its top row solved. -->
+          <svg class="wordmark__mark" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="4.25" rx="1" fill="var(--g0)" />
+            <g fill="var(--picked)">
+              <rect x="2" y="7.25" width="4.25" height="4.25" rx="1" /><rect x="7.25" y="7.25" width="4.25" height="4.25" rx="1" /><rect x="12.5" y="7.25" width="4.25" height="4.25" rx="1" /><rect x="17.75" y="7.25" width="4.25" height="4.25" rx="1" />
+              <rect x="2" y="12.5" width="4.25" height="4.25" rx="1" /><rect x="7.25" y="12.5" width="4.25" height="4.25" rx="1" /><rect x="12.5" y="12.5" width="4.25" height="4.25" rx="1" /><rect x="17.75" y="12.5" width="4.25" height="4.25" rx="1" />
+              <rect x="2" y="17.75" width="4.25" height="4.25" rx="1" /><rect x="7.25" y="17.75" width="4.25" height="4.25" rx="1" /><rect x="12.5" y="17.75" width="4.25" height="4.25" rx="1" /><rect x="17.75" y="17.75" width="4.25" height="4.25" rx="1" />
+            </g>
+          </svg>
+          <span>Inside Jokes</span>
+        </a>
+        <nav class="nav" aria-label="Main">
+          <a class="nav__link" id="nav-play" href="./">Play</a>
+          <a class="nav__link" id="nav-make" href="#make">Make a puzzle</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Play -->
+      <section id="s-play" class="screen" aria-labelledby="p-title">
+        <div class="play-head">
+          <h1 class="play-title" id="p-title">Inside Jokes</h1>
+          <p class="play-by" id="p-by"></p>
+          <p class="play-prompt">Create four groups of four!</p>
+          <p class="notice" id="p-example" hidden>This is an example puzzle. To put your group's lore in, use <a href="#make">Make a puzzle</a>.</p>
+        </div>
+
+        <div class="field field--inline" id="picker-wrap" hidden>
+          <label class="field__label" for="picker">Puzzle</label>
+          <select class="input" id="picker"></select>
+        </div>
+
+        <div class="board" id="board">
+          <ol class="solved" id="solved" aria-label="Groups found"></ol>
+          <div class="grid" id="grid" role="group" aria-label="Words. Pick four that belong together."></div>
+        </div>
+
+        <div class="controls">
+        <div class="mistakes" id="mistakes-row">
+          <span class="mistakes__label" aria-hidden="true">Mistakes Remaining:</span>
+          <span class="dots" id="dots" aria-hidden="true"></span>
+          <span class="sr-only" id="mistakes-sr"></span>
+        </div>
+
+        <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+        <div class="actions actions--center" id="play-actions">
+          <button class="btn" type="button" id="shuffle">Shuffle</button>
+          <button class="btn" type="button" id="deselect" disabled>Deselect All</button>
+          <button class="btn btn--primary" type="button" id="submit" disabled>Submit</button>
+        </div>
+        </div>
+
+        <div class="card end" id="end" hidden>
+          <h2 id="end-title"></h2>
+          <p class="muted" id="end-text"></p>
+          <div class="result" id="result" aria-hidden="true"></div>
+          <div class="actions">
+            <button class="btn btn--primary" type="button" id="copy-result">Copy results</button>
+            <button class="btn" type="button" id="replay">Play again</button>
+          </div>
+          <p class="status" id="copy-status" role="status" aria-live="polite"></p>
+        </div>
+
+        <p class="muted remix"><a href="#make" id="remix">Edit a copy of this puzzle</a></p>
+      </section>
+
+      <!-- A shared link that doesn't decode -->
+      <section id="s-broken" class="screen" hidden aria-labelledby="broken-title">
+        <h1 id="broken-title">That link is broken</h1>
+        <p class="lede">The puzzle is stored in the link itself, so part of it was probably cut off when it was pasted. Ask for the link again, or <a href="./">play the latest puzzle</a>.</p>
+      </section>
+
+      <!-- Make -->
+      <section id="s-make" class="screen" hidden aria-labelledby="m-title">
+        <div class="intro">
+          <h1 id="m-title">Make a puzzle</h1>
+          <p class="lede">Write four groups of four from your group's jokes, easiest first. The whole puzzle is stored in the link you send, so nothing is uploaded and there's no account.</p>
+        </div>
+
+        <form id="maker" class="stack" novalidate>
+          <div class="card stack">
+            <div class="field">
+              <label class="field__label" for="m-name">Puzzle name</label>
+              <input class="input" id="m-name" name="title" maxlength="60" placeholder="e.g. The lake house, summer '24" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="m-by">Made by (optional)</label>
+              <input class="input" id="m-by" name="by" maxlength="40" autocomplete="off" />
+            </div>
+          </div>
+          <div id="m-groups" class="stack"></div>
+
+          <ul class="problems" id="problems" aria-live="polite"></ul>
+
+          <div class="actions">
+            <button class="btn btn--primary" type="submit" id="m-play">Play it</button>
+            <button class="btn" type="button" id="m-copy">Copy link</button>
+          </div>
+          <div class="field" id="m-link-wrap" hidden>
+            <label class="field__label" for="m-link">Link to send</label>
+            <input class="input" id="m-link" readonly />
+          </div>
+          <p class="status" id="m-status" role="status" aria-live="polite"></p>
+          <p class="muted">Your draft stays in this browser until you <button class="link-btn" type="button" id="m-clear">start over</button>.</p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="container footer">
+      <p>Inside Jokes, a game by Sean Joudrie in the style of Connections. Not made or endorsed by The New York Times. Type: Fraunces and Libre Franklin (OFL).</p>
+    </footer>
+
+    <template id="group-tpl">
+      <fieldset class="card stack group-set">
+        <legend class="group-set__legend"><span class="swatch" aria-hidden="true"></span><span class="group-set__name"></span></legend>
+        <div class="field">
+          <label class="field__label">Connection</label>
+          <input class="input" data-k="name" maxlength="120" autocomplete="off" />
+        </div>
+        <div class="words">
+          <input class="input" data-k="w0" maxlength="24" autocomplete="off" />
+          <input class="input" data-k="w1" maxlength="24" autocomplete="off" />
+          <input class="input" data-k="w2" maxlength="24" autocomplete="off" />
+          <input class="input" data-k="w3" maxlength="24" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label class="field__label">The story behind it (optional, shown once it's solved)</label>
+          <input class="input" data-k="why" maxlength="240" autocomplete="off" />
+        </div>
+      </fieldset>
+    </template>
+
+    <script src="game.js?v=dev"></script>
+    <script src="puzzles.js?v=dev"></script>
+    <script src="app.js?v=dev"></script>
+  </body>
+</html>
