@@ -62,7 +62,21 @@
           <h2>Add a playlist</h2>
           <button id="library-btn" class="btn btn--spotify btn--block" type="button">Add from your Spotify library</button>
           <p id="library-note" class="error error--inline" role="alert" hidden></p>
-          <p class="divider"><span>or paste a link</span></p>
+          <p class="divider"><span>or get every playlist with a file</span></p>
+          <ol class="steps">
+            <li>Open <a class="link" href="https://exportify.app" target="_blank" rel="noopener">Exportify</a>, sign in with Spotify and tap <strong>Export All</strong>.</li>
+            <li>Come back and upload the <strong>spotify_playlists.zip</strong> it saves. Every playlist comes in with every song; no sign-in needed here.</li>
+          </ol>
+          <div class="actions">
+            <a class="btn btn--quiet btn--grow" href="https://exportify.app" target="_blank" rel="noopener">Open Exportify</a>
+            <button id="upload-btn" class="btn btn--quiet btn--grow" type="button">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m17 8-5-5-5 5" /><path d="M12 3v12" /></svg>
+              Upload
+            </button>
+            <input id="file-input" class="sr-only" type="file" accept=".zip,.csv,application/zip,text/csv" tabindex="-1" aria-hidden="true" />
+          </div>
+          <p id="file-status" class="status" role="status"></p>
+          <p class="divider"><span>or paste a link (first 100 songs)</span></p>
           <form id="link-form" class="stack" autocomplete="off" novalidate>
             <label class="field">
               <span class="field__label">Spotify playlist link</span>
@@ -222,6 +236,7 @@
     <script src="spotify.js?v=dev"></script>
     <script src="clips.js?v=dev"></script>
     <script src="reserves.js?v=dev"></script>
+    <script src="imports.js?v=dev"></script>
     <script src="ui.js?v=dev"></script>
     <script src="app.js?v=dev"></script>
   </body>

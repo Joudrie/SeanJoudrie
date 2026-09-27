@@ -5,6 +5,7 @@ Guess songs from Spotify playlists, one clip at a time. Save playlists to your *
 ## Adding playlists to your reserves
 
 - **From your Spotify library** (sign in with Spotify): playlists you own or collaborate on load every song. Playlists you saved from other people load their first 100 songs.
+- **From a file** (no sign-in needed, no limit on people): Exportify (https://exportify.app) signs in with its own Spotify access and exports every playlist as `spotify_playlists.zip`, one CSV per playlist. Uploading that zip, or a single playlist CSV from Exportify or TuneMyMusic, adds every playlist with every song. `imports.js` parses the CSVs and reads the zip (stored or deflated). Spotify caps this app's own sign-in at about 5 accounts; when it refuses an account, the page points to the file route.
 - **By link** (no sign-in needed): paste any public playlist's link (`open.spotify.com/playlist/…`, a `spotify.link/…` share link, or a `spotify:playlist:` URI). It loads the first 100 songs; your own playlists load in full when you're signed in.
 - **Why 100:** Spotify's API only returns a playlist's songs to its owner or a collaborator. For anyone else's playlist, the game reads Spotify's public embed page, which lists the first 100 songs. The reserve says "100 of 155" and explains the workaround: in Spotify, add the playlist to a new playlist of your own, then add that copy from your library.
 
@@ -21,6 +22,7 @@ Live at https://seanjoudrie.github.io/SeanJoudrie/heardle-test/. It stays at thi
 | `spotify.js` | Spotify login (Authorization Code with PKCE, straight from the browser, no server or client secret), token refresh, playlists, every song in a playlist |
 | `clips.js` | Title clean-up and matching (`Text`), and 30-second clips from Deezer's public search API (`Clips`) |
 | `reserves.js` | Saved playlists and their songs; adding from the library or a link |
+| `imports.js` | Playlist files: Exportify's zip or a playlist CSV → reserves |
 | `../supabase/functions/song-guess-playlist/` | Reads a public playlist's embed page for playlists you don't own (Supabase project `Globalio`, no secrets, answers only this site) |
 | `ui.js` | Look, motion and sound: the listening meter, play control, right/wrong/skip sounds, iris reveal, decrypting title, halftone cover, "+N" |
 | `app.js` | Screens: reserves, your Spotify library, guessing, reveal, end |

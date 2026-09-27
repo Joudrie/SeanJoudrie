@@ -41,10 +41,12 @@ const Reserves = (() => {
   const isSelected = (id) => selected.has(id);
   const selectedList = () => list.filter((r) => selected.has(r.id));
 
-  function put(r) {
+  // New reserves are selected, unless `select` is false (bulk file imports,
+  // where picking what to play is left to the person).
+  function put(r, select = true) {
     const i = list.findIndex((x) => x.id === r.id);
     if (i >= 0) list[i] = r;
-    else { list.unshift(r); selected.add(r.id); }
+    else { list.unshift(r); if (select) selected.add(r.id); }
     save();
   }
 
