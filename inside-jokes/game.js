@@ -116,7 +116,7 @@ const Game = (() => {
   }
 
   // One row of colour squares per guess, as in the original's share text.
-  const SQUARES = ['\u{1F7E8}', '\u{1F7E9}', '\u{1F7E6}', '\u{1F7E5}'];
+  const SQUARES = ['\u{1F7E8}', '\u{1F7E9}', '\u{1F7E6}', '\u{1F7EA}'];
   function shareText(p, history, url) {
     const past = [];
     const rows = [];

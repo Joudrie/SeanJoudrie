@@ -6,7 +6,7 @@ https://seanjoudrie.github.io/SeanJoudrie/inside-jokes/ once `main` deploys.
 ## Making a puzzle
 
 1. Open **Make a puzzle** on the site.
-2. Fill in four groups of four, easiest (yellow) to hardest (red). Each group gets a
+2. Fill in four groups of four, easiest (yellow) to hardest (purple). Each group gets a
    connection name, four words and an optional story that shows once it's solved.
 3. **Copy link** and send it to the group. The whole puzzle lives in the link after `#p=`,
    so nothing is uploaded and nobody needs an account.

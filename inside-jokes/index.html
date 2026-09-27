@@ -16,13 +16,13 @@
     <meta property="og:image:alt" content="Inside Jokes: a four-by-four grid of word tiles, with the top row solved in yellow." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="robots" content="noindex" />
-    <meta name="theme-color" content="#f6f3ec" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Libre+Franklin:wght@400;600;800&display=swap" />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Libre+Franklin:wght@400;600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Libre+Franklin:wght@400;600;800&display=swap" rel="stylesheet" /></noscript>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Libre+Franklin:wght@400;600;700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Libre+Franklin:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Libre+Franklin:wght@400;600;700&display=swap" rel="stylesheet" /></noscript>
     <link rel="stylesheet" href="styles.css?v=dev" />
   </head>
   <body>
@@ -50,10 +50,10 @@
     <main class="container">
       <!-- Play -->
       <section id="s-play" class="screen" aria-labelledby="p-title">
-        <div class="intro">
-          <p class="eyebrow" id="p-by"></p>
-          <h1 id="p-title">Inside Jokes</h1>
-          <p class="lede">Find the four groups of four. Only someone who was there will get all of them.</p>
+        <div class="play-head">
+          <h1 class="play-title" id="p-title">Inside Jokes</h1>
+          <p class="play-by" id="p-by"></p>
+          <p class="play-prompt">Create four groups of four!</p>
           <p class="notice" id="p-example" hidden>This is an example puzzle. To put your group's lore in, use <a href="#make">Make a puzzle</a>.</p>
         </div>
 
@@ -69,7 +69,7 @@
 
         <div class="controls">
         <div class="mistakes" id="mistakes-row">
-          <span class="field__label">Mistakes left</span>
+          <span class="mistakes__label" aria-hidden="true">Mistakes Remaining:</span>
           <span class="dots" id="dots" aria-hidden="true"></span>
           <span class="sr-only" id="mistakes-sr"></span>
         </div>
@@ -78,7 +78,7 @@
 
         <div class="actions actions--center" id="play-actions">
           <button class="btn" type="button" id="shuffle">Shuffle</button>
-          <button class="btn" type="button" id="deselect" disabled>Deselect all</button>
+          <button class="btn" type="button" id="deselect" disabled>Deselect All</button>
           <button class="btn btn--primary" type="button" id="submit" disabled>Submit</button>
         </div>
         </div>

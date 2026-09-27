@@ -2,7 +2,7 @@
 // lists the rest. Make one on the site (Make a puzzle), check it plays, then
 // paste its fields here to keep it at the plain home-page link.
 //
-// Groups go easiest to hardest: yellow, green, blue, red. `why` is the story
+// Groups go easiest to hardest: yellow, green, blue, purple. `why` is the story
 // behind the bit, shown once the group is solved; leave it '' to skip it.
 // `example: true` labels a puzzle as sample content on the page.
 const Puzzles = [

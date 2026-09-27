@@ -1,11 +1,12 @@
 /* Inside Jokes
-   A newspaper puzzle page: warm paper, black ink, putty tiles. Fraunces for
-   headings, Libre Franklin for everything else (tiles in its heavy caps).
-   4px spacing scale, two radii, a 1px line is the only depth. Group colours
-   run yellow, green, blue, red, easiest to hardest. Motion only answers a
-   guess; none under reduced motion. Contrast checked for WCAG AA: ink 15:1
-   on paper and 11:1 on a tile, muted 5.6:1 on paper, ink 9:1 or better on
-   every group colour. */
+   Built to feel like the Connections board friends already play: white
+   page, putty tiles in bold caps, a dark-olive pick, pill buttons, and the
+   four group colours yellow, green, blue, purple (flat fills, easiest to
+   hardest). Fraunces for page headings, Libre Franklin for the game.
+   4px spacing scale, two radii, a 1px line is the only depth. Motion only
+   answers a guess; none under reduced motion. Contrast for WCAG AA: black
+   on a tile 17:1, white on a pick 7:1, muted 7:1 on white, black 7:1 or
+   better on every group colour. */
 
 :root {
   /* Spacing (4px scale) */
@@ -26,11 +27,12 @@
   --t-xs: 12px;
   --t-sm: 14px;
   --t-body: 16px;
+  --t-lg: 20px;
   --t-h2: 24px;
   --t-h1: 36px;
 
   /* Shape */
-  --radius: 8px;
+  --radius: 6px;
   --radius-pill: 999px;
   --container: 600px;
   --tap: 48px;
@@ -42,19 +44,20 @@
   --ease: cubic-bezier(.2, .8, .2, 1);
 
   /* Colour */
-  --paper: #f6f3ec;
-  --surface: #fffdf8;
-  --ink: #1d1b18;
-  --muted: #6a655c;
-  --line: #d9d3c6;
-  --tile: #e6e0d3;
-  --tile-hover: #dcd5c6;
-  --picked: #4a463f;
-  --on-picked: #fffdf8;
-  --g0: #f2cf5b; /* yellow, easiest */
-  --g1: #a6c77a; /* green */
-  --g2: #a9c8e8; /* blue */
-  --g3: #eb9a86; /* red, hardest */
+  --paper: #ffffff;
+  --surface: #ffffff;
+  --ink: #000000;
+  --muted: #5a594e;
+  --line: #dcdcd4;
+  --tile: #efefe6;
+  --tile-hover: #e6e6dc;
+  --picked: #5a594e;
+  --on-picked: #ffffff;
+  --disabled: #8a8a82;
+  --g0: #f9df6d; /* yellow, easiest */
+  --g1: #a0c35a; /* green */
+  --g2: #b0c4ef; /* blue */
+  --g3: #ba81c5; /* purple, hardest */
   --focus: #2458c6;
   --error: #b3261e;
   color-scheme: light;
@@ -143,9 +146,9 @@ main.container { padding-top: var(--s-8); padding-bottom: var(--s-16); }
 .group[data-g="1"] { background: var(--g1); }
 .group[data-g="2"] { background: var(--g2); }
 .group[data-g="3"] { background: var(--g3); }
-.group__name { font: 800 var(--t-body) / 1.3 var(--text); text-transform: uppercase; letter-spacing: 0.02em; }
-.group__words { font-size: var(--t-body); }
-.group__why { font-size: var(--t-sm); }
+.group__name { font: 700 var(--t-body) / 1.3 var(--text); text-transform: uppercase; }
+.group__words { font-size: var(--t-body); line-height: 1.3; text-transform: uppercase; }
+.group__why { font-size: var(--t-sm); line-height: 1.4; }
 .group__why:empty { display: none; }
 
 .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-2); }
@@ -157,7 +160,7 @@ main.container { padding-top: var(--s-8); padding-bottom: var(--s-16); }
   border-radius: var(--radius);
   background: var(--tile);
   color: var(--ink);
-  font: 800 var(--t-body) / 1.15 var(--text);
+  font: 700 var(--t-body) / 1.15 var(--text);
   text-transform: uppercase;
   overflow: hidden;
   overflow-wrap: normal;
@@ -165,7 +168,8 @@ main.container { padding-top: var(--s-8); padding-bottom: var(--s-16); }
   transition: background-color var(--t-feedback) var(--ease), color var(--t-feedback) var(--ease);
 }
 .tile--mid { font-size: var(--t-sm); }
-.tile--long, .tile--break { font-size: var(--t-xs); }
+.tile--long, .tile--tight, .tile--break { font-size: var(--t-xs); }
+.tile--tight, .tile--break { padding-inline: 0; letter-spacing: -0.03em; }
 .tile--break { hyphens: auto; overflow-wrap: anywhere; }
 .tile:hover { background: var(--tile-hover); }
 .tile[aria-pressed="true"] { background: var(--picked); color: var(--on-picked); }
@@ -183,8 +187,9 @@ main.container { padding-top: var(--s-8); padding-bottom: var(--s-16); }
 
 .mistakes { display: flex; align-items: center; justify-content: center; gap: var(--s-3); }
 .dots { display: inline-flex; gap: var(--s-2); }
-.dot { width: var(--s-3); height: var(--s-3); border-radius: var(--radius-pill); background: var(--picked); }
-.dot--used { background: var(--line); }
+.mistakes__label { font-size: var(--t-body); color: var(--muted); }
+.dot { width: var(--s-4); height: var(--s-4); border-radius: var(--radius-pill); background: var(--picked); }
+.dot--used { visibility: hidden; }
 
 .controls { display: grid; gap: var(--s-3); }
 .toast { min-height: 1.5em; text-align: center; font-weight: 600; }
@@ -203,10 +208,12 @@ main.container { padding-top: var(--s-8); padding-bottom: var(--s-16); }
   cursor: pointer;
   transition: background-color var(--t-feedback) var(--ease), color var(--t-feedback) var(--ease), border-color var(--t-feedback) var(--ease);
 }
+.btn { padding: 0 var(--s-6); }
 .btn:hover:not(:disabled) { background: var(--tile); }
 .btn--primary { background: var(--ink); color: var(--surface); }
 .btn--primary:hover:not(:disabled) { background: var(--picked); }
-.btn:disabled { border-color: var(--line); color: var(--muted); background: transparent; cursor: default; }
+.btn:disabled { border-color: var(--disabled); color: var(--disabled); background: transparent; cursor: default; }
+.actions--center .btn { padding: 0 var(--s-4); }
 .link-btn { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .link-btn:hover { color: var(--ink); }
 
@@ -251,8 +258,20 @@ main.container { padding-top: var(--s-8); padding-bottom: var(--s-16); }
 
 .footer { padding-top: var(--s-6); padding-bottom: var(--s-10); border-top: 1px solid var(--line); color: var(--muted); font-size: var(--t-xs); }
 
+/* Play header: the puzzle's name and the one-line instruction, centred. */
+.play-head { display: grid; gap: var(--s-2); text-align: center; justify-items: center; }
+.play-title { font: 700 var(--t-h2) / 1.2 var(--display); }
+.play-by { color: var(--muted); font-size: var(--t-sm); }
+.play-by:empty { display: none; }
+.play-prompt { font-size: var(--t-body); }
+.play-head .notice { text-align: left; }
+
 @media (min-width: 560px) {
   :root { --t-h1: 44px; }
+  .tile, .group__name, .group__words { font-size: var(--t-lg); }
+  .tile--mid { font-size: var(--t-body); }
+  .tile--long, .tile--tight, .tile--break { font-size: var(--t-sm); }
+  .play-prompt { font-size: var(--t-lg); }
 }
 @media (max-width: 400px) {
   .nav { gap: var(--s-3); }

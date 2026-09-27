@@ -3,7 +3,7 @@
 // #p=<code> (a puzzle carried in the link), #make (the maker).
 (() => {
   const $ = (id) => document.getElementById(id);
-  const COLOURS = ['Yellow', 'Green', 'Blue', 'Red'];
+  const COLOURS = ['Yellow', 'Green', 'Blue', 'Purple'];
   const LEVELS = ['easiest', 'medium', 'hard', 'hardest'];
 
   // Storage can be missing or throw (private windows); the game works without it.
@@ -110,7 +110,7 @@
 
   // Step each tile's type down until its longest word fits on one line;
   // only a word too long even at the smallest size breaks mid-word.
-  const FITS = ['tile--mid', 'tile--long', 'tile--break'];
+  const FITS = ['tile--mid', 'tile--long', 'tile--tight', 'tile--break'];
   function fitTiles() {
     document.querySelectorAll('.tile').forEach((t) => {
       t.classList.remove(...FITS);
