@@ -1,0 +1,29 @@
+name: Song Guess tests
+
+on:
+  pull_request:
+    paths:
+      - 'heardle-test/**'
+      - '.github/workflows/song-guess-tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'heardle-test/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: heardle-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Unit tests plus the whole game in headless Chromium against fake
+      # Spotify, Deezer and reader-function servers (tests/helpers.mjs).
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
