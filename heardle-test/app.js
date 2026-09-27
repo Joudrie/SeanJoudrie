@@ -227,8 +227,9 @@ async function openLibrary() {
       Spotify.logout();
       $('pick-status').textContent = '';
       backHome();
-      $('library-note').textContent = 'Spotify’s sign-in for Song Guess is full: Spotify only lets a handful of accounts into a test app like this. Get every playlist with a file instead (just below); it needs no sign-in here.';
+      $('library-note').textContent = 'Spotify’s sign-in for Song Guess is full: Spotify only lets a handful of accounts into a test app like this. Use the File tab instead: it gets every playlist with no sign-in here.';
       $('library-note').hidden = false;
+      selectTab('spotify'); // the page reloaded after sign-in, on the Link tab
       $('link').focus({ preventScroll: true });
       return;
     }
@@ -755,6 +756,25 @@ $('paste-btn').addEventListener('click', async () => {
     $('link-status').textContent = 'Couldn’t read the clipboard. Long-press the box and tap Paste.';
   }
 });
+// Add-a-playlist tabs: one way of adding shows at a time.
+const TABS = ['link', 'decades', 'spotify', 'file'];
+function selectTab(name, focus) {
+  for (const t of TABS) {
+    const on = t === name;
+    $('tab-' + t).setAttribute('aria-selected', String(on));
+    $('tab-' + t).tabIndex = on ? 0 : -1;
+    $('panel-' + t).hidden = !on;
+  }
+  if (focus) $('tab-' + name).focus();
+}
+TABS.forEach((t, i) => {
+  $('tab-' + t).addEventListener('click', () => selectTab(t));
+  $('tab-' + t).addEventListener('keydown', (e) => {
+    const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    if (step) { e.preventDefault(); selectTab(TABS[(i + step + TABS.length) % TABS.length], true); }
+  });
+});
+
 $('library-btn').addEventListener('click', () => openLibrary().catch(fail));
 
 // Ready-made playlists: Apple Music's editorial playlists (decades, genres),

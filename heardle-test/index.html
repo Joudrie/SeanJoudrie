@@ -60,10 +60,30 @@
 
         <div class="card stack">
           <h2>Add a playlist</h2>
-          <label class="field">
-            <span class="field__label">Ready-made playlists, no sign-in</span>
-            <select id="preset">
-              <option value="">Pick a decade or genre…</option>
+          <div class="tabs" role="tablist" aria-label="Ways to add a playlist">
+            <button id="tab-link" class="tab" type="button" role="tab" aria-selected="true" aria-controls="panel-link">Link</button>
+            <button id="tab-decades" class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-decades" tabindex="-1">Decades</button>
+            <button id="tab-spotify" class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-spotify" tabindex="-1">Spotify</button>
+            <button id="tab-file" class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-file" tabindex="-1">File</button>
+          </div>
+
+          <div id="panel-link" class="stack" role="tabpanel" aria-labelledby="tab-link">
+            <form id="link-form" class="stack" autocomplete="off" novalidate>
+              <label class="sr-only" for="link">Spotify or Apple Music playlist link</label>
+              <input id="link" class="input" type="url" inputmode="url" placeholder="Spotify or Apple Music link" enterkeyhint="go" autocapitalize="off" spellcheck="false" />
+              <div class="actions">
+                <button id="paste-btn" class="btn btn--quiet btn--grow" type="button">Paste</button>
+                <button id="add-btn" class="btn btn--primary btn--grow" type="submit">Add</button>
+              </div>
+            </form>
+            <p class="muted">Share → Copy link in either app. Spotify links load the first 100 songs.</p>
+            <p id="link-status" class="status" role="status"></p>
+          </div>
+
+          <div id="panel-decades" class="stack" role="tabpanel" aria-labelledby="tab-decades" hidden>
+            <label class="sr-only" for="preset">Ready-made playlists</label>
+            <select id="preset" class="input">
+              <option value="">Pick a decade or genre</option>
               <optgroup label="Decades">
                 <option value="https://music.apple.com/us/playlist/60s-hits-essentials/pl.405e6f67264a4a44ba1b0c3a787c78b8">’60s hits</option>
                 <option value="https://music.apple.com/us/playlist/70s-hits-essentials/pl.1745c21b5f084936ad637b4cd5cbd99a">’70s hits</option>
@@ -78,41 +98,24 @@
                 <option value="https://music.apple.com/us/playlist/10-years-of-apple-music-top-songs/pl.c125e4b2998a4015abbe6b9ae90d5479">Top 300 songs, 2015–2025</option>
               </optgroup>
             </select>
-          </label>
-          <p id="preset-status" class="status" role="status"></p>
-          <p class="divider"><span>or use your own</span></p>
-          <button id="library-btn" class="btn btn--spotify btn--block" type="button">Add from your Spotify library</button>
-          <p id="library-note" class="error error--inline" role="alert" hidden></p>
-          <p class="divider"><span>or get every playlist with a file</span></p>
-          <ol class="steps">
-            <li>Open <a class="link" href="https://exportify.app" target="_blank" rel="noopener">Exportify</a>, sign in with Spotify and tap <strong>Export All</strong>.</li>
-            <li>Come back and upload the <strong>spotify_playlists.zip</strong> it saves. Every playlist comes in with every song; no sign-in needed here.</li>
-          </ol>
-          <div class="actions">
-            <a class="btn btn--quiet btn--grow" href="https://exportify.app" target="_blank" rel="noopener">Open Exportify</a>
-            <button id="upload-btn" class="btn btn--quiet btn--grow" type="button">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m17 8-5-5-5 5" /><path d="M12 3v12" /></svg>
-              Upload
-            </button>
-            <input id="file-input" class="sr-only" type="file" accept=".zip,.csv,application/zip,text/csv" tabindex="-1" aria-hidden="true" />
+            <p id="preset-status" class="status" role="status"></p>
           </div>
-          <p id="file-status" class="status" role="status"></p>
-          <p class="divider"><span>or paste a playlist link</span></p>
-          <form id="link-form" class="stack" autocomplete="off" novalidate>
-            <label class="field">
-              <span class="field__label">Spotify or Apple Music playlist link</span>
-              <input id="link" type="url" inputmode="url" placeholder="Paste a playlist link" enterkeyhint="go" autocapitalize="off" spellcheck="false" />
-            </label>
+
+          <div id="panel-spotify" class="stack" role="tabpanel" aria-labelledby="tab-spotify" hidden>
+            <button id="library-btn" class="btn btn--spotify btn--block" type="button">Sign in with Spotify</button>
+            <p class="muted">Loads your own playlists in full. Spotify only lets a few accounts in; if it’s full, use File.</p>
+            <p id="library-note" class="error error--inline" role="alert" hidden></p>
+          </div>
+
+          <div id="panel-file" class="stack" role="tabpanel" aria-labelledby="tab-file" hidden>
+            <p class="muted">Get every playlist at once: on <a class="link" href="https://exportify.app" target="_blank" rel="noopener">Exportify</a>, sign in and tap Export All, then upload the zip here.</p>
             <div class="actions">
-              <button id="paste-btn" class="btn btn--quiet btn--grow" type="button">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /></svg>
-                Paste
-              </button>
-              <button id="add-btn" class="btn btn--primary btn--grow" type="submit">Add</button>
+              <a class="btn btn--quiet btn--grow" href="https://exportify.app" target="_blank" rel="noopener">Exportify</a>
+              <button id="upload-btn" class="btn btn--primary btn--grow" type="button">Upload</button>
+              <input id="file-input" class="sr-only" type="file" accept=".zip,.csv,application/zip,text/csv" tabindex="-1" aria-hidden="true" />
             </div>
-          </form>
-          <p class="muted">In Spotify or Apple Music: tap ⋯ on a playlist, then Share, then Copy link. Apple Music links bring every song; Spotify links bring the first 100.</p>
-          <p id="link-status" class="status" role="status"></p>
+            <p id="file-status" class="status" role="status"></p>
+          </div>
         </div>
 
         <div class="row">

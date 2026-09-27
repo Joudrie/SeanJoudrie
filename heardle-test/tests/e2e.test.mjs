@@ -72,6 +72,7 @@ test('links: bad, private, Spotify (first 100) and Apple (every song)', async ()
 
 test('ready-made playlists: picking a decade adds it', async () => {
   const { page, ctx, errors } = await open();
+  await page.click('#tab-decades');
   await page.selectOption('#preset', { label: '’80s hits' });
   await page.waitForFunction(() => /Added/.test(document.getElementById('preset-status').textContent));
   assert.match(await text(page, '#preset-status'), /’80s Hits Essentials.*100 songs/);
@@ -87,6 +88,7 @@ test('ready-made playlists: picking a decade adds it', async () => {
 
 test('Spotify library: sign in, add own (full) and a friend’s (first 100), survives reload', async () => {
   const { page, ctx, errors } = await open();
+  await page.click('#tab-spotify');
   await page.click('#library-btn');
   await page.waitForSelector('#s-library:not([hidden]) .pl');
   await page.click('#playlists .pl >> nth=0');
@@ -109,6 +111,7 @@ test('file import: Exportify zip, re-upload replaces, bad file errors', async ()
   const head = '"Track URI","Track Name","Artist Name(s)","Album Image URL","Track Duration (ms)"\n';
   const rows = (p, n) => head + Array.from({ length: n }, (_, i) => `"spotify:track:${(p + i).padEnd(22, 'x')}","${p} Song ${i}","Artist ${i % 3}","https://i.scdn.co/${p}","200000"`).join('\n') + '\n';
   const file = { name: 'spotify_playlists.zip', mimeType: 'application/zip', buffer: Buffer.from(zip({ 'road_trip.csv': rows('rt', 60), 'chill.csv': rows('ch', 40) })) };
+  await page.click('#tab-file');
   await page.setInputFiles('#file-input', file);
   await page.waitForFunction(() => /Added 2 playlists/.test(document.getElementById('file-status').textContent));
   assert.equal(await text(page, '#file-status'), 'Added 2 playlists (100 songs). Tap the ones you want to play.');
@@ -196,6 +199,7 @@ test('a round: clip lengths, wrong, skip, right, reveal, score, end', async () =
 
 test('reduced motion: no decrypt, no halftone, meter stays static', async () => {
   const { page, ctx, errors } = await open({ reducedMotion: 'reduce' });
+  await page.click('#tab-decades');
   await page.selectOption('#preset', { label: '’80s hits' });
   await page.waitForFunction(() => /Added/.test(document.getElementById('preset-status').textContent));
   await page.click('#play-btn');
@@ -213,9 +217,10 @@ test('reduced motion: no decrypt, no halftone, meter stays static', async () => 
 
 test('Spotify refuses an account: signed out, pointed to the file route', async () => {
   const { page, ctx, errors } = await open({ state: { spotifyRefuses: true } });
+  await page.click('#tab-spotify');
   await page.click('#library-btn');
   await page.waitForSelector('#library-note:not([hidden])');
-  assert.match(await text(page, '#library-note'), /sign-in for Song Guess is full/);
+  assert.match(await text(page, '#library-note'), /sign-in for Song Guess is full.*File tab/);
   assert.ok(await page.evaluate(() => !Spotify.isLoggedIn()));
   assert.ok(await page.isVisible('#s-home'));
   assert.deepEqual(errors, []);
@@ -224,6 +229,7 @@ test('Spotify refuses an account: signed out, pointed to the file route', async 
 
 test('cycling sign-in spots: a full saved playlist survives losing access', async () => {
   const { page, ctx, errors, state } = await open();
+  await page.click('#tab-spotify');
   await page.click('#library-btn');
   await page.waitForSelector('#s-library:not([hidden]) .pl');
   await page.click('#playlists .pl >> nth=0');
@@ -237,6 +243,19 @@ test('cycling sign-in spots: a full saved playlist survives losing access', asyn
   await page.click('.reserve >> .link-btn >> text=Update songs');
   await page.waitForFunction(() => /only shows the first 100/.test(document.getElementById('error').textContent));
   assert.match(await text(page, '#reserves .pl__meta'), /^155 songs/);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('add-a-playlist tabs: one panel at a time, arrow keys move', async () => {
+  const { page, ctx, errors } = await open();
+  const visible = () => page.$$eval('[role=tabpanel]', (e) => e.filter((p) => !p.hidden).map((p) => p.id));
+  assert.deepEqual(await visible(), ['panel-link']);
+  await page.click('#tab-file');
+  assert.deepEqual(await visible(), ['panel-file']);
+  await page.keyboard.press('ArrowRight');
+  assert.deepEqual(await visible(), ['panel-link'], 'wraps around from the last tab');
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'tab-link');
   assert.deepEqual(errors, []);
   await ctx.close();
 });
