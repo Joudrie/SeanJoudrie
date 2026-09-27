@@ -76,11 +76,11 @@
             <input id="file-input" class="sr-only" type="file" accept=".zip,.csv,application/zip,text/csv" tabindex="-1" aria-hidden="true" />
           </div>
           <p id="file-status" class="status" role="status"></p>
-          <p class="divider"><span>or paste a link (first 100 songs)</span></p>
+          <p class="divider"><span>or paste a playlist link</span></p>
           <form id="link-form" class="stack" autocomplete="off" novalidate>
             <label class="field">
-              <span class="field__label">Spotify playlist link</span>
-              <input id="link" type="url" inputmode="url" placeholder="https://open.spotify.com/playlist/…" enterkeyhint="go" autocapitalize="off" spellcheck="false" />
+              <span class="field__label">Spotify or Apple Music playlist link</span>
+              <input id="link" type="url" inputmode="url" placeholder="Paste a playlist link" enterkeyhint="go" autocapitalize="off" spellcheck="false" />
             </label>
             <div class="actions">
               <button id="paste-btn" class="btn btn--quiet btn--grow" type="button">
@@ -90,7 +90,7 @@
               <button id="add-btn" class="btn btn--primary btn--grow" type="submit">Add</button>
             </div>
           </form>
-          <p class="muted">In Spotify: tap ⋯ on any public playlist, then Share, then Copy link.</p>
+          <p class="muted">In Spotify or Apple Music: tap ⋯ on a playlist, then Share, then Copy link. Apple Music links bring every song; Spotify links bring the first 100.</p>
           <p id="link-status" class="status" role="status"></p>
         </div>
 

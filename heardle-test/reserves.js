@@ -73,6 +73,9 @@ const Reserves = (() => {
     const m = s.match(/playlist[/:]([A-Za-z0-9]{22})(?![A-Za-z0-9])/) || s.match(/^([A-Za-z0-9]{22})$/);
     return m ? m[1] : null;
   }
+  // An Apple Music playlist link (music.apple.com/…/playlist/…/pl.…).
+  const isApple = (text) => /music\.apple\.com\/[a-z]{2}\/playlist\//i.test(String(text || ''));
+
   // Share links from the Spotify app (spotify.link/…) need the server to follow them.
   const isShortLink = (text) => /(^|\/\/)(spotify\.link|spotify\.app\.link)\//.test(String(text || '').trim());
 
@@ -84,8 +87,12 @@ const Reserves = (() => {
       throw new Error('Couldn’t reach the playlist reader. Check your connection and try again.');
     }
     const data = await res.json().catch(() => ({}));
-    if (res.status === 404) throw new Error('Spotify says that playlist doesn’t exist or isn’t public. Private playlists and Spotify’s personal mixes (like Daily Mix) can only be added by their owner, from their library.');
-    if (res.status === 400) throw new Error('That doesn’t look like a Spotify playlist link. In Spotify, tap ⋯ on the playlist, then Share, then Copy link.');
+    if (res.status === 404) {
+      throw new Error(isApple(params.link)
+        ? 'Apple Music says that playlist doesn’t exist or isn’t shared. In Apple Music, open the playlist, tap ⋯, then Share Playlist, and copy that link.'
+        : 'Spotify says that playlist doesn’t exist or isn’t public. Private playlists and Spotify’s personal mixes (like Daily Mix) can only be added by their owner, from their library.');
+    }
+    if (res.status === 400) throw new Error('That doesn’t look like a Spotify or Apple Music playlist link. In either app, tap ⋯ on the playlist, then Share, then Copy link.');
     if (!res.ok) throw new Error('Couldn’t read that playlist right now. Try again in a minute.');
     return {
       id: data.id,
@@ -95,7 +102,9 @@ const Reserves = (() => {
       total: data.total,
       songs: data.songs,
       full: data.songs.length >= data.total,
-      source: 'link',
+      // Apple Music pages list every song; Spotify's public page stops at 100.
+      source: data.service === 'apple' ? 'apple' : 'link',
+      link: data.link,
       addedAt: Date.now(),
     };
   }
@@ -123,9 +132,10 @@ const Reserves = (() => {
   // From a pasted link. Signed in and it's yours: every song. Otherwise the
   // public reader.
   async function fromLink(text, me, onProgress) {
+    if (isApple(text)) return readPublic({ link: String(text).trim() });
     const id = idFrom(text);
     if (!id && isShortLink(text)) return readPublic({ link: String(text).trim() });
-    if (!id) throw new Error('That doesn’t look like a Spotify playlist link. In Spotify, tap ⋯ on the playlist, then Share, then Copy link.');
+    if (!id) throw new Error('That doesn’t look like a Spotify or Apple Music playlist link. In either app, tap ⋯ on the playlist, then Share, then Copy link.');
     if (Spotify.isLoggedIn() && me) {
       try {
         const pl = await Spotify.api('/playlists/' + id + '?fields=id,name,owner(id,display_name),collaborative,images');
@@ -140,6 +150,7 @@ const Reserves = (() => {
 
   // Fresh songs for a reserve that's already saved (playlists change).
   async function refresh(r, me, onProgress) {
+    if (r.source === 'apple') return readPublic({ link: r.link });
     if (r.source === 'spotify' && Spotify.isLoggedIn()) {
       const pl = await Spotify.api('/playlists/' + r.id + '?fields=id,name,owner(id,display_name),collaborative,images');
       return fromSpotify(pl, me, onProgress);

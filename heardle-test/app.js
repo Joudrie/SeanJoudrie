@@ -685,6 +685,7 @@ function reveal(won) {
     img.src = cover;
   }
   $('reveal-spotify').href = s.url || 'https://open.spotify.com/track/' + s.id;
+  $('reveal-spotify').textContent = s.service === 'apple' ? 'Open in Apple Music' : 'Open in Spotify';
   $('reveal-deezer').href = game.clip.link;
   // Say so when the clip is another recording, like a live version.
   const other = Text.norm(game.clip.title) !== Text.norm(Text.clean(s.title)) &&
