@@ -53,3 +53,15 @@ Motion runs only on a tap or while a clip the player started is playing, and non
 - **The meter listens.** The `<audio>` element has `crossOrigin = "anonymous"`, since Deezer's clip CDN allows CORS. It is routed through a single `AudioContext` and `AnalyserNode`, created on the first tap. The meter draws the energy of the seconds you've actually heard, smoothed the way cava does it.
 - **No libraries.** All motion is CSS, the Web Animations API, or small canvas routines in `ui.js`. Icons are inline Lucide SVGs (ISC).
 - **Not built:** the optional Chladni sand field and the melting cover from the prompt. Both need testing on a real phone first.
+
+## Tests
+
+`npm test` (after `npm install` in this folder) runs:
+- `tests/unit.test.mjs`: title matching and playlist-file parsing (CSV and zip), in Node.
+- `tests/e2e.test.mjs`: the whole game in headless Chromium at phone width, against fake Spotify, Deezer, reader-function and image servers (`tests/helpers.mjs`). It covers links, ready-made playlists, the Spotify library, file import, a full round with strict autoplay, reduced motion, a refused account, cycling sign-in spots, and desktop layout.
+
+`.github/workflows/song-guess-tests.yml` runs them on every pull request that touches this folder. The test files aren't deployed.
+
+## Ready-made playlists
+
+The "Ready-made playlists" menu lists Apple Music's editorial playlists (’60s to 2010s hits, today's hits, classic rock, top 300 songs 2015–2025). They're read in full through the link reader, like any Apple Music link. To add one, add an `<option>` with its `music.apple.com/…/playlist/…` link in `index.html`.

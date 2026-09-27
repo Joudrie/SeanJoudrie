@@ -60,6 +60,27 @@
 
         <div class="card stack">
           <h2>Add a playlist</h2>
+          <label class="field">
+            <span class="field__label">Ready-made playlists, no sign-in</span>
+            <select id="preset">
+              <option value="">Pick a decade or genre…</option>
+              <optgroup label="Decades">
+                <option value="https://music.apple.com/us/playlist/60s-hits-essentials/pl.405e6f67264a4a44ba1b0c3a787c78b8">’60s hits</option>
+                <option value="https://music.apple.com/us/playlist/70s-hits-essentials/pl.1745c21b5f084936ad637b4cd5cbd99a">’70s hits</option>
+                <option value="https://music.apple.com/us/playlist/80s-hits-essentials/pl.af4d982795c6472ea48579eb147cd726">’80s hits</option>
+                <option value="https://music.apple.com/us/playlist/90s-hits-essentials/pl.0d70b7c9be8e4e0b95ebbf5578aaf7a2">’90s hits</option>
+                <option value="https://music.apple.com/us/playlist/2000s-hits-essentials/pl.e50ccee7318043eaaf8e8e28a2a55114">2000s hits</option>
+                <option value="https://music.apple.com/us/playlist/2010s-hits-essentials/pl.6b1b5dfda067443481265436811002f1">2010s hits</option>
+              </optgroup>
+              <optgroup label="More">
+                <option value="https://music.apple.com/us/playlist/todays-hits/pl.f4d106fed2bd41149aaacabb233eb5eb">Today’s hits</option>
+                <option value="https://music.apple.com/us/playlist/classic-rock-essentials/pl.1a7fd42205674dd282d106f533f4bea6">Classic rock</option>
+                <option value="https://music.apple.com/us/playlist/10-years-of-apple-music-top-songs/pl.c125e4b2998a4015abbe6b9ae90d5479">Top 300 songs, 2015–2025</option>
+              </optgroup>
+            </select>
+          </label>
+          <p id="preset-status" class="status" role="status"></p>
+          <p class="divider"><span>or use your own</span></p>
           <button id="library-btn" class="btn btn--spotify btn--block" type="button">Add from your Spotify library</button>
           <p id="library-note" class="error error--inline" role="alert" hidden></p>
           <p class="divider"><span>or get every playlist with a file</span></p>

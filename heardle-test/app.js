@@ -757,6 +757,32 @@ $('paste-btn').addEventListener('click', async () => {
 });
 $('library-btn').addEventListener('click', () => openLibrary().catch(fail));
 
+// Ready-made playlists: Apple Music's editorial playlists (decades, genres),
+// read in full through the link reader. Picking one adds it right away.
+$('preset').addEventListener('change', async () => {
+  const sel = $('preset');
+  const link = sel.value;
+  if (!link) return;
+  const label = sel.options[sel.selectedIndex].textContent;
+  showError('');
+  sel.disabled = true;
+  $('preset-status').textContent = 'Adding ' + label + '…';
+  try {
+    const r = await Reserves.fromLink(link, null);
+    const again = Reserves.has(r.id);
+    Reserves.put(r);
+    if (!again) justAdded = r.id;
+    $('preset-status').textContent = (again ? 'Updated ' : 'Added ') + '“' + r.name + '”: ' + songCount(r) + '.';
+    renderHome();
+  } catch (e) {
+    $('preset-status').textContent = '';
+    showError(e.message || 'Couldn’t add that playlist.');
+  } finally {
+    sel.value = '';
+    sel.disabled = false;
+  }
+});
+
 // Playlist files (Exportify's Export All zip, or one playlist's CSV)
 $('upload-btn').addEventListener('click', () => $('file-input').click());
 $('file-input').addEventListener('change', async () => {
