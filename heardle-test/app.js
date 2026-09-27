@@ -88,7 +88,7 @@ function renderHome() {
     const tick = span('pl__tick', '');
     tick.innerHTML = CHECK_SVG;
     b.append(coverEl(r.image), span('pl__name', r.name),
-      span('pl__meta', busy.get(r.id) || songCount(r) + (r.owner ? ' · by ' + r.owner : '')), tick);
+      span('pl__meta', busy.get(r.id) || songCount(r) + (r.source === 'file' ? ' · from a file' : r.owner ? ' · by ' + r.owner : '')), tick);
     b.addEventListener('click', () => { Reserves.toggle(r.id); renderHome(); });
 
     const actions = document.createElement('div');
@@ -104,7 +104,9 @@ function renderHome() {
     remove.className = 'link-btn';
     remove.textContent = 'Remove';
     remove.addEventListener('click', () => { Reserves.remove(r.id); renderHome(); });
-    actions.append(refresh, remove);
+    // A file can't be re-read from here; uploading a newer export replaces it.
+    if (r.source === 'file') actions.append(remove);
+    else actions.append(refresh, remove);
 
     li.append(b);
     if (!r.full) {
@@ -225,7 +227,7 @@ async function openLibrary() {
       Spotify.logout();
       $('pick-status').textContent = '';
       backHome();
-      $('library-note').textContent = 'Spotify won’t let this account in yet: Song Guess is still a test, and only accounts on its tester list can sign in. Ask Sean to add the email your Spotify account uses. Until then, paste a playlist link below; that works without signing in.';
+      $('library-note').textContent = 'Spotify’s sign-in for Song Guess is full: Spotify only lets a handful of accounts into a test app like this. Get every playlist with a file instead (just below); it needs no sign-in here.';
       $('library-note').hidden = false;
       $('link').focus({ preventScroll: true });
       return;
@@ -753,6 +755,35 @@ $('paste-btn').addEventListener('click', async () => {
   }
 });
 $('library-btn').addEventListener('click', () => openLibrary().catch(fail));
+
+// Playlist files (Exportify's Export All zip, or one playlist's CSV)
+$('upload-btn').addEventListener('click', () => $('file-input').click());
+$('file-input').addEventListener('change', async () => {
+  const file = $('file-input').files[0];
+  if (!file) return;
+  showError('');
+  $('upload-btn').disabled = true;
+  $('file-status').textContent = 'Reading ' + file.name + '…';
+  try {
+    const found = await Imports.fromFile(file);
+    const one = found.length === 1;
+    for (const r of found) {
+      Reserves.put(r, one); // one playlist: select it; a whole library: let them pick
+      if (one) justAdded = r.id;
+    }
+    const songs = found.reduce((n, r) => n + r.songs.length, 0);
+    $('file-status').textContent = one
+      ? 'Added “' + found[0].name + '”: ' + plural(songs, 'song', 'songs') + '.'
+      : 'Added ' + found.length + ' playlists (' + songs.toLocaleString() + ' songs). Tap the ones you want to play.';
+    renderHome();
+  } catch (e) {
+    $('file-status').textContent = '';
+    showError(e.message || 'Couldn’t read that file.');
+  } finally {
+    $('file-input').value = '';
+    $('upload-btn').disabled = false;
+  }
+});
 $('select-all-btn').addEventListener('click', () => {
   const list = Reserves.all();
   Reserves.selectAll(!list.every((r) => Reserves.isSelected(r.id)));
