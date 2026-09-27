@@ -7,30 +7,28 @@
 // `example: true` labels a puzzle as sample content on the page.
 const Puzzles = [
   {
-    // A starter built from public facts about SNHU and Manchester; swap
-    // groups for real inside jokes as they come in.
-    title: 'Manchester, NH',
+    title: 'SNHU',
     by: '',
     groups: [
       {
-        name: 'SNHU dorms',
+        name: 'Demolished SNHU buildings',
         why: '',
-        words: ['Kingston', 'Monadnock', 'Belknap', 'Conway'],
+        words: ['Exeter', 'Spaulding', 'Rockingham', 'Stark'],
       },
       {
-        name: 'Manchester bars',
+        name: "Bars we've gone to",
         why: '',
-        words: ['Strange Brew', "McGarvey's", 'Thirsty Moose', 'The Goat'],
+        words: ['SoHo', 'The Crow', 'Parq', 'Double Deuce'],
       },
       {
-        name: 'Irish drinking songs',
-        why: 'The Wild Rover is also a Manchester pub. That was the trap.',
-        words: ['Wild Rover', 'Whiskey in the Jar', 'Danny Boy', 'Molly Malone'],
+        name: 'Cheeses',
+        why: "Colby is a friend too. That was the trap.",
+        words: ['Colby', 'Goat', 'Blue', 'American'],
       },
       {
-        name: 'Presidents that are also NH towns',
-        why: 'Washington and Lincoln are SNHU dorms too, which is why they looked like group one.',
-        words: ['Washington', 'Lincoln', 'Jefferson', 'Monroe'],
+        name: 'Names with a double letter',
+        why: 'JJ and Cassidy are friends. Dolly and Cappy are pets.',
+        words: ['JJ', 'Cassidy', 'Dolly', 'Cappy'],
       },
     ],
   },
