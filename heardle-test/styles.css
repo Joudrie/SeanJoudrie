@@ -15,6 +15,7 @@
   --s-5: 20px;
   --s-6: 24px;
   --s-8: 32px;
+  --s-10: 40px;
   --s-12: 48px;
   --s-16: 64px;
   --s-24: 96px;
@@ -152,10 +153,42 @@ body:has(#s-home:not([hidden])) { padding-bottom: var(--s-24); }
   padding: var(--s-4);
 }
 .stack { display: grid; gap: var(--s-4); }
-.steps { margin: 0; padding-left: var(--s-5); display: grid; gap: var(--s-2); font-size: var(--t-sm); color: var(--muted); }
-.steps strong { color: var(--ink); font-weight: 600; }
-.divider { display: flex; align-items: center; gap: var(--s-3); font: 600 var(--t-xs) / 1 var(--text); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-1);
+  padding: var(--s-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.tab {
+  min-height: var(--s-10);
+  padding: 0 var(--s-1);
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  font: 600 var(--t-sm) / 1 var(--text);
+  cursor: pointer;
+  transition: background-color var(--t-feedback) var(--ease), color var(--t-feedback) var(--ease);
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--line); color: var(--ink); }
+.tab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.input {
+  min-height: var(--tap);
+  width: 100%;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--ink);
+  font: var(--t-body) / 1.2 var(--text);
+  transition: border-color var(--t-feedback) var(--ease);
+}
+.input::placeholder { color: var(--muted); }
+.input:hover { border-color: var(--muted); }
+.input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .row { display: flex; justify-content: space-between; align-items: center; gap: var(--s-4); }
 .actions { display: flex; gap: var(--s-3); }
 
