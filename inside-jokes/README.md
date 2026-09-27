@@ -1,4 +1,4 @@
-# Inside Jokes
+# ConnecSeans
 
 A Connections-style puzzle built from a friend group's jokes, lore and references. Live at
 https://seanjoudrie.github.io/SeanJoudrie/inside-jokes/ once `main` deploys.
