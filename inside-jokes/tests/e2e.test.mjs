@@ -84,11 +84,34 @@ const GROUPS = [
 
 test('the home page plays the newest listed puzzle', async () => {
   const { page, ctx, errors } = await open();
-  const newest = Puzzles[Puzzles.length - 1];
+  const listed = Puzzles.filter((p) => !p.slug);
+  const newest = listed[listed.length - 1];
   assert.equal(await page.textContent('#p-title'), newest.title);
   assert.equal(await page.isVisible('#p-example'), Boolean(newest.example));
   assert.equal(await page.locator('.tile').count(), 16);
   assert.ok(await noSideScroll(page));
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('a puzzle with a slug plays at its own link and stays off the home page', async () => {
+  const own = Puzzles.find((p) => p.slug);
+  if (!own) return;
+  const { page, ctx, errors } = await open('#' + own.slug);
+  assert.equal(await page.textContent('#p-title'), own.title);
+  assert.equal(await page.isVisible('#picker-wrap'), false);
+  assert.equal(await page.locator('.tile').count(), 16);
+  assert.ok(await noSideScroll(page));
+  // Play and the logo keep a friend on this puzzle.
+  await page.click('#nav-make');
+  await page.click('#nav-play');
+  assert.equal(await page.textContent('#p-title'), own.title);
+  assert.equal(new URL(await page.$eval('.wordmark', (a) => a.href)).hash, '#' + own.slug);
+  // No tile breaks a word at a random letter.
+  assert.equal(await page.locator('.tile').evaluateAll((ts) => ts.filter((t) => t.scrollWidth > t.clientWidth).length), 0);
+  await page.goto(url);
+  assert.notEqual(await page.textContent('#p-title'), own.title);
+  assert.equal(await page.isVisible('#picker-wrap'), false);
   assert.deepEqual(errors, []);
   await ctx.close();
 });
