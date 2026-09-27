@@ -49,11 +49,12 @@
     render();
   }
 
-  function render() {
+  // `fresh` lists groups that just appeared, so only they pop in.
+  function render(fresh = []) {
     const s = Game.state(P, history);
     // Found groups in the order found; on a loss, the rest follow, easiest first.
     const shown = s.lost ? [...s.solved, ...[0, 1, 2, 3].filter((g) => !s.solved.includes(g))] : s.solved;
-    $('solved').replaceChildren(...shown.map((g) => groupRow(g)));
+    $('solved').replaceChildren(...shown.map((g) => groupRow(g, fresh.indexOf(g))));
 
     if (!s.over) order = order.filter((w) => !s.solved.includes(Game.groupOf(P, w)));
     $('grid').replaceChildren(...(s.over ? [] : order).map(tile));
@@ -80,9 +81,10 @@
     }
   }
 
-  function groupRow(g) {
+  function groupRow(g, freshIndex = -1) {
     const li = document.createElement('li');
-    li.className = 'group';
+    li.className = 'group' + (freshIndex >= 0 ? ' is-new' : '');
+    if (freshIndex > 0) li.style.animationDelay = `${freshIndex * motion('--t-stagger') * 4}ms`;
     li.dataset.g = g;
     const name = document.createElement('span');
     name.className = 'group__name';
@@ -149,9 +151,71 @@
     if (text) toastTimer = setTimeout(() => { $('toast').textContent = ''; }, 2500);
   }
 
+  // ---------- Motion ----------
+  // Every animation answers a Submit; under reduced motion none run and
+  // nothing waits. Durations come from the CSS tokens.
+  const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const motion = (name) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0;
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  let busy = false;
+
+  function setBusy(on) {
+    busy = on;
+    document.body.dataset.busy = on ? '1' : '';
+    // While locked every control is off; render() sets Submit and Deselect back.
+    for (const id of ['shuffle', 'deselect', 'submit']) $(id).disabled = on;
+  }
+
+  // The picked tiles hop one after another, in board order.
+  async function hop() {
+    if (calm()) return;
+    const tiles = [...document.querySelectorAll('.tile[aria-pressed="true"]')];
+    const gap = motion('--t-stagger');
+    tiles.forEach((t, i) => {
+      t.style.animationDelay = `${i * gap}ms`;
+      t.classList.add('is-hop');
+    });
+    await wait(gap * (tiles.length - 1) + motion('--t-hop'));
+    tiles.forEach((t) => {
+      t.classList.remove('is-hop');
+      t.style.animationDelay = '';
+    });
+  }
+
+  // A correct four slide into the top row before becoming the group bar.
+  async function gather(words) {
+    // Swap, don't reorder: each picked tile below the top row trades places
+    // with an unpicked one in it, so only those tiles move.
+    const next = order.slice();
+    const out = next.map((w, i) => i).filter((i) => i >= Game.SIZE && words.includes(next[i]));
+    const into = next.map((w, i) => i).filter((i) => i < Game.SIZE && !words.includes(next[i]));
+    out.forEach((i, k) => { [next[i], next[into[k]]] = [next[into[k]], next[i]]; });
+    if (calm()) {
+      order = next;
+      return;
+    }
+    const before = new Map([...document.querySelectorAll('.tile')].map((t) => [t.dataset.word, t.getBoundingClientRect()]));
+    order = next;
+    $('grid').replaceChildren(...order.map(tile));
+    fitTiles();
+    const tiles = [...document.querySelectorAll('.tile')];
+    for (const t of tiles) {
+      const a = before.get(t.dataset.word);
+      const b = t.getBoundingClientRect();
+      t.style.transition = 'none';
+      t.style.transform = `translate(${a.left - b.left}px, ${a.top - b.top}px)`;
+    }
+    document.body.getBoundingClientRect(); // commit the start positions
+    for (const t of tiles) {
+      t.style.transition = `transform ${motion('--t-move')}ms var(--ease)`;
+      t.style.transform = '';
+    }
+    await wait(motion('--t-move'));
+  }
+
   $('grid').addEventListener('click', (e) => {
     const b = e.target.closest('.tile');
-    if (!b) return;
+    if (!b || busy) return;
     const w = b.dataset.word;
     if (picked.includes(w)) picked = picked.filter((x) => x !== w);
     else if (picked.length < Game.SIZE) picked = [...picked, w];
@@ -162,32 +226,40 @@
   });
 
   $('shuffle').addEventListener('click', () => {
+    if (busy) return;
     order = Game.shuffle(order);
     render();
   });
 
   $('deselect').addEventListener('click', () => {
+    if (busy) return;
     picked = [];
     render();
   });
 
-  $('submit').addEventListener('click', () => {
-    if (picked.length !== Game.SIZE) return;
+  $('submit').addEventListener('click', async () => {
+    if (busy || picked.length !== Game.SIZE) return;
     const r = Game.check(P, picked, history);
     if (r.result === 'repeat') return say('Already guessed.');
+    const before = Game.state(P, history);
     history = [...history, picked];
     store.set(progressKey(), history);
+    say('');
+    setBusy(true);
+    await hop();
     if (r.result === 'correct') {
+      await gather(picked);
       picked = [];
-      say('');
-      render();
+      setBusy(false);
+      render([r.group]);
       return;
     }
     say(r.result === 'one-away' ? 'One away.' : 'Not a group.');
     const s = Game.state(P, history);
+    setBusy(false);
     if (s.over) {
       picked = [];
-      render();
+      render([0, 1, 2, 3].filter((g) => !before.solved.includes(g)));
       return;
     }
     render();

@@ -39,8 +39,11 @@
 
   /* Motion */
   --t-feedback: 120ms;
-  --t-enter: 240ms;
   --t-shake: 360ms;
+  --t-hop: 240ms;     /* one picked tile hopping on Submit */
+  --t-stagger: 100ms; /* gap between tiles hopping */
+  --t-move: 360ms;    /* a solved four sliding to the top row */
+  --t-pop: 360ms;     /* the group bar replacing them */
   --ease: cubic-bezier(.2, .8, .2, 1);
 
   /* Colour */
@@ -140,8 +143,8 @@ main.container { padding-top: var(--s-8); padding-bottom: var(--s-16); }
   border-radius: var(--radius);
   text-align: center;
   align-content: center;
-  animation: enter var(--t-enter) var(--ease);
 }
+.group.is-new { animation: pop var(--t-pop) var(--ease) both; }
 .group[data-g="0"] { background: var(--g0); }
 .group[data-g="1"] { background: var(--g1); }
 .group[data-g="2"] { background: var(--g2); }
@@ -172,17 +175,24 @@ main.container { padding-top: var(--s-8); padding-bottom: var(--s-16); }
 .tile--tight, .tile--break { padding-inline: 0; letter-spacing: -0.03em; }
 .tile--break { hyphens: auto; overflow-wrap: anywhere; }
 .tile:hover { background: var(--tile-hover); }
-.tile[aria-pressed="true"] { background: var(--picked); color: var(--on-picked); }
+.tile { position: relative; }
+/* Picked tiles ride above the rest while they slide to the top row. */
+.tile[aria-pressed="true"] { background: var(--picked); color: var(--on-picked); z-index: 1; }
 .tile:disabled { cursor: default; }
 .tile.is-wrong { animation: shake var(--t-shake) var(--ease); }
+.tile.is-hop { animation: hop var(--t-hop) var(--ease) both; }
 
 @keyframes shake {
   20%, 60% { transform: translateX(-4px); }
   40%, 80% { transform: translateX(4px); }
 }
-@keyframes enter {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes hop {
+  50% { transform: translateY(calc(-1 * var(--s-2))); }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.96); }
+  60% { opacity: 1; transform: scale(1.02); }
+  to { transform: none; }
 }
 
 .mistakes { display: flex; align-items: center; justify-content: center; gap: var(--s-3); }

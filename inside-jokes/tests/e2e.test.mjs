@@ -57,6 +57,11 @@ async function open(hash = '', { reducedMotion = 'no-preference' } = {}) {
   return { page, ctx, errors };
 }
 const pick = async (page, words) => { for (const w of words) await page.click(`.tile[data-word="${w}"]`); };
+// Submit, then wait out the hop / slide / pop so the next move lands.
+const submit = async (page) => {
+  await page.click('#submit');
+  await page.waitForFunction(() => !document.body.dataset.busy);
+};
 const noSideScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
 
 const SAMPLE = {
@@ -94,11 +99,11 @@ test('one away, repeats, a win and the share text', async () => {
   assert.ok(await noSideScroll(page));
 
   await pick(page, ['Traffic', 'Parking', 'Alarm', 'Taco']);
-  await page.click('#submit');
+  await submit(page);
   assert.equal(await page.textContent('#toast'), 'One away.');
   assert.equal(await page.locator('.dot--used').count(), 1);
   // The same four again costs nothing.
-  await page.click('#submit');
+  await submit(page);
   assert.equal(await page.textContent('#toast'), 'Already guessed.');
   assert.equal(await page.locator('.dot--used').count(), 1);
 
@@ -106,7 +111,7 @@ test('one away, repeats, a win and the share text', async () => {
   assert.equal(await page.locator('.tile[aria-pressed="true"]').count(), 0);
   for (const g of GROUPS) {
     await pick(page, g);
-    await page.click('#submit');
+    await submit(page);
   }
   assert.equal(await page.locator('.group').count(), 4);
   assert.match(await page.textContent('.group[data-g="0"] .group__why'), /The lore goes here/);
@@ -126,6 +131,21 @@ test('one away, repeats, a win and the share text', async () => {
   await ctx.close();
 });
 
+test('a correct four hop, slide to the top row, then pop in as the group', async () => {
+  const { page, ctx, errors } = await open(LINK);
+  await pick(page, GROUPS[3]);
+  await page.click('#submit');
+  // Mid-animation the board is locked.
+  assert.equal(await page.isDisabled('#shuffle'), true);
+  await page.waitForSelector('.tile.is-hop');
+  await page.waitForFunction(() => !document.body.dataset.busy);
+  assert.equal(await page.locator('.group.is-new').count(), 1);
+  assert.equal(await page.locator('.tile').count(), 12);
+  assert.equal(await page.isDisabled('#shuffle'), false);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
 test('four mistakes lose and show every group', async () => {
   const { page, ctx, errors } = await open(LINK, { reducedMotion: 'reduce' });
   const wrong = [
@@ -136,7 +156,7 @@ test('four mistakes lose and show every group', async () => {
   ];
   for (const w of wrong) {
     await pick(page, w);
-    await page.click('#submit');
+    await submit(page);
     if (await page.locator('.tile[aria-pressed="true"]').count()) await page.click('#deselect');
   }
   assert.equal(await page.textContent('#end-title'), 'Out of mistakes');
@@ -182,7 +202,7 @@ test('make a puzzle, get its link, and play it; a cut link says so', async () =>
   assert.equal(await page.textContent('#p-title'), 'Lake house');
   assert.equal(await page.isVisible('#p-example'), false);
   await pick(page, ['Keys', 'Wallet', 'Dignity', 'Kayak']);
-  await page.click('#submit');
+  await submit(page);
   assert.equal(await page.textContent('.group__why'), 'All in one weekend.');
 
   await page.goto(link.slice(0, -10));
