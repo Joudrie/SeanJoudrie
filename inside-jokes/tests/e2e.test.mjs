@@ -7,7 +7,15 @@ import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import { chromium } from 'playwright';
+
+// The rules and listed puzzles, read the same way the unit tests do, so the
+// browser tests can build links and don't depend on what puzzles.js holds.
+const vmCtx = vm.createContext({ TextEncoder, TextDecoder, btoa, atob, Uint8Array });
+for (const f of ['game.js', 'puzzles.js']) vm.runInContext(readFileSync(new URL('../' + f, import.meta.url), 'utf8'), vmCtx);
+const { Game, Puzzles } = vm.runInContext('({ Game, Puzzles })', vmCtx);
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png' };
@@ -51,6 +59,17 @@ async function open(hash = '', { reducedMotion = 'no-preference' } = {}) {
 const pick = async (page, words) => { for (const w of words) await page.click(`.tile[data-word="${w}"]`); };
 const noSideScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
 
+const SAMPLE = {
+  title: 'Road trip',
+  by: 'Sean',
+  groups: [
+    { name: 'Excuses for being late', why: 'The lore goes here.', words: ['Traffic', 'Parking', 'Alarm', 'Uber'] },
+    { name: 'Road trip snacks', why: '', words: ['Jerky', 'Twizzlers', 'Sunflower seeds', 'Gas station sushi'] },
+    { name: 'Every group trip', why: '', words: ['Lost keys', 'Dead phone', 'Wrong exit', 'Venmo requests'] },
+    { name: '___ night', why: '', words: ['Game', 'Trivia', 'Karaoke', 'Taco'] },
+  ],
+};
+const LINK = '#p=' + Game.encode(SAMPLE);
 const GROUPS = [
   ['Traffic', 'Parking', 'Alarm', 'Uber'],
   ['Jerky', 'Twizzlers', 'Sunflower seeds', 'Gas station sushi'],
@@ -58,9 +77,19 @@ const GROUPS = [
   ['Game', 'Trivia', 'Karaoke', 'Taco'],
 ];
 
-test('the example: labelled, one away, repeats, a win and the share text', async () => {
+test('the home page plays the newest listed puzzle', async () => {
   const { page, ctx, errors } = await open();
-  assert.equal(await page.isVisible('#p-example'), true);
+  const newest = Puzzles[Puzzles.length - 1];
+  assert.equal(await page.textContent('#p-title'), newest.title);
+  assert.equal(await page.isVisible('#p-example'), Boolean(newest.example));
+  assert.equal(await page.locator('.tile').count(), 16);
+  assert.ok(await noSideScroll(page));
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('one away, repeats, a win and the share text', async () => {
+  const { page, ctx, errors } = await open(LINK);
   assert.equal(await page.locator('.tile').count(), 16);
   assert.ok(await noSideScroll(page));
 
@@ -80,7 +109,7 @@ test('the example: labelled, one away, repeats, a win and the share text', async
     await page.click('#submit');
   }
   assert.equal(await page.locator('.group').count(), 4);
-  assert.match(await page.textContent('.group[data-g="0"] .group__why'), /Example story/);
+  assert.match(await page.textContent('.group[data-g="0"] .group__why'), /The lore goes here/);
   assert.equal(await page.isVisible('#end'), true);
   assert.equal(await page.textContent('#end-title'), 'Solved.');
   await page.click('#copy-result');
@@ -98,7 +127,7 @@ test('the example: labelled, one away, repeats, a win and the share text', async
 });
 
 test('four mistakes lose and show every group', async () => {
-  const { page, ctx, errors } = await open('', { reducedMotion: 'reduce' });
+  const { page, ctx, errors } = await open(LINK, { reducedMotion: 'reduce' });
   const wrong = [
     ['Traffic', 'Jerky', 'Lost keys', 'Game'],
     ['Parking', 'Twizzlers', 'Dead phone', 'Trivia'],
