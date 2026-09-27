@@ -1,4 +1,4 @@
-// Inside Jokes: the page. Rules live in game.js, the group's puzzles in
+// ConnecSeans: the page. Rules live in game.js, the group's puzzles in
 // puzzles.js. Routes: ./ (newest puzzle), #n=2 (a listed puzzle),
 // #p=<code> (a puzzle carried in the link), #make (the maker).
 (() => {
@@ -44,7 +44,7 @@
     $('p-title').textContent = P.title || 'Untitled puzzle';
     $('p-by').textContent = P.by ? `Puzzle by ${P.by}` : '';
     $('p-example').hidden = !P.example;
-    document.title = P.title ? `${P.title} · Inside Jokes` : 'Inside Jokes';
+    document.title = P.title ? `${P.title} · ConnecSeans` : 'ConnecSeans';
     say('');
     render();
   }
@@ -353,7 +353,7 @@
   function route() {
     const h = location.hash.slice(1);
     if (h === 'make') {
-      document.title = 'Make a puzzle · Inside Jokes';
+      document.title = 'Make a puzzle · ConnecSeans';
       show('s-make');
       window.scrollTo(0, 0);
       return;
@@ -361,7 +361,7 @@
     if (h.startsWith('p=')) {
       const p = Game.decode(h.slice(2));
       if (!p) {
-        document.title = 'Broken link · Inside Jokes';
+        document.title = 'Broken link · ConnecSeans';
         return show('s-broken');
       }
       $('picker-wrap').hidden = true;

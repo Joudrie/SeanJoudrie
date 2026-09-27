@@ -79,7 +79,7 @@ test('state: four mistakes lose, repeats are free, four groups win', () => {
 test('share text: a square per word, repeats left out', () => {
   const h = [['Keys', 'Wallet', 'Dignity', 'Toxic'], ['Toxic', 'Keys', 'Wallet', 'Dignity'], SAMPLE.groups[0].words];
   const lines = Game.shareText(SAMPLE, h, 'https://x.test/#p=1').split('\n');
-  assert.equal(lines[0], 'Inside Jokes: Lake house ’24');
+  assert.equal(lines[0], 'ConnecSeans: Lake house ’24');
   assert.equal(lines[1], '\u{1F7E8}\u{1F7E8}\u{1F7E8}\u{1F7EA}');
   assert.equal(lines[2], '\u{1F7E8}'.repeat(4));
   assert.equal(lines[3], 'https://x.test/#p=1');

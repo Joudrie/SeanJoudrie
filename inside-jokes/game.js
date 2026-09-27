@@ -1,4 +1,4 @@
-// Inside Jokes: the rules, with no DOM. Loaded as a plain browser script
+// ConnecSeans: the rules, with no DOM. Loaded as a plain browser script
 // (global `Game`) and by the unit tests through node:vm.
 //
 // A puzzle is { title, by, groups: [{ name, why, words: [4] } x4] }, groups
@@ -125,7 +125,7 @@ const Game = (() => {
       past.push(pick);
       rows.push(pick.map((w) => SQUARES[groupOf(p, w)]).join(''));
     }
-    return [`Inside Jokes: ${p.title || 'Untitled'}`, ...rows, url].filter(Boolean).join('\n');
+    return [`ConnecSeans: ${p.title || 'Untitled'}`, ...rows, url].filter(Boolean).join('\n');
   }
 
   return { SIZE, MISTAKES, MAX_WORD, problems, tidy, encode, decode, id, shuffle, groupOf, check, state, shareText };
