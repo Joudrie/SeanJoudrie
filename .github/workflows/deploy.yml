@@ -87,6 +87,16 @@ jobs:
           cp ../inside-jokes/index.html ../inside-jokes/styles.css ../inside-jokes/game.js ../inside-jokes/puzzles.js ../inside-jokes/app.js ../inside-jokes/favicon.svg ../inside-jokes/og.png dist/inside-jokes/
           sed -i "s/?v=dev/?v=${GITHUB_SHA::7}/g" dist/inside-jokes/index.html
 
+      # Each friend group's puzzle gets its own page: the same game with only
+      # that group's puzzle file, so no page holds another group's puzzle.
+      # /inside-jokes/ stays SNHU's; Wakefield's is /wakefield/.
+      - name: Add Wakefield edition
+        run: |
+          mkdir -p dist/wakefield
+          cp dist/inside-jokes/index.html dist/inside-jokes/styles.css dist/inside-jokes/game.js dist/inside-jokes/app.js dist/inside-jokes/favicon.svg dist/inside-jokes/og.png dist/wakefield/
+          cp ../inside-jokes/editions/wakefield.js dist/wakefield/puzzles.js
+          sed -i "s#/inside-jokes/#/wakefield/#g" dist/wakefield/index.html
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: portfolio/dist
