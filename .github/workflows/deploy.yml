@@ -9,6 +9,7 @@ on:
       - 'launch-check/**'
       - 'heardle-test/**'
       - 'inside-jokes/**'
+      - 'jj/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
   # Weekly rebuild so Algorithm Builder's "good channel" videos stay fresh.
@@ -96,6 +97,12 @@ jobs:
           cp dist/inside-jokes/index.html dist/inside-jokes/styles.css dist/inside-jokes/game.js dist/inside-jokes/app.js dist/inside-jokes/favicon.svg dist/inside-jokes/og.png dist/wakefield/
           cp ../inside-jokes/editions/wakefield.js dist/wakefield/puzzles.js
           sed -i "s#/inside-jokes/#/wakefield/#g" dist/wakefield/index.html
+
+      # JJ is one plain HTML page; it ships at /SeanJoudrie/jj/.
+      - name: Add JJ
+        run: |
+          mkdir -p dist/jj
+          cp ../jj/index.html ../jj/favicon.svg ../jj/og.png dist/jj/
 
       - uses: actions/upload-pages-artifact@v3
         with:
