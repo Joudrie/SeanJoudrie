@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JJ</title>
+    <meta name="description" content="JJ is a monkey. Tap JJ and JJ dances." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="JJ" />
+    <meta property="og:title" content="JJ" />
+    <meta property="og:description" content="Tap the monkey. The monkey dances." />
+    <meta property="og:url" content="https://seanjoudrie.github.io/SeanJoudrie/jj/" />
+    <meta property="og:image" content="https://seanjoudrie.github.io/SeanJoudrie/jj/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="JJ, a cartoon brown monkey, on a cream background." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#f6efe2" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-4: 16px;
+        --space-6: 24px;
+        --radius: 8px;
+        --bg: #f6efe2;
+        --ink: #3b2414;
+        --fur: #7a4a2a;
+        --face: #e9c39b;
+        --focus: #1f5fbf;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-4);
+        padding: var(--space-6) var(--space-4);
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      h1 {
+        margin: 0;
+        font-size: 48px;
+        line-height: 56px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+      }
+      .monkey {
+        appearance: none;
+        border: 0;
+        background: none;
+        padding: var(--space-2);
+        border-radius: var(--radius);
+        cursor: pointer;
+        touch-action: manipulation;
+        width: min(80vw, 360px);
+      }
+      .monkey:focus-visible { outline: 3px solid var(--focus); outline-offset: var(--space-1); }
+      .monkey svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+      /* Every moving part turns around its own joint. */
+      #jj g { transform-box: view-box; }
+      #whole { transform-origin: 100px 250px; }
+      #head { transform-origin: 100px 118px; }
+      #arm-l { transform-origin: 72px 138px; }
+      #arm-r { transform-origin: 128px 138px; }
+      #leg-l { transform-origin: 86px 198px; }
+      #leg-r { transform-origin: 114px 198px; }
+      #tail { transform-origin: 124px 196px; }
+
+      /* Two dances; each tap plays the next one. */
+      .dance-a #whole { animation: bounce 0.4s ease-in-out 4; }
+      .dance-a #head { animation: bob 0.4s ease-in-out 4; }
+      .dance-a #arm-l { animation: wave-l 0.4s ease-in-out 4; }
+      .dance-a #arm-r { animation: wave-r 0.4s ease-in-out 4; }
+      .dance-a #leg-l { animation: kick-l 0.8s ease-in-out 2; }
+      .dance-a #leg-r { animation: kick-r 0.8s ease-in-out 2; }
+      .dance-a #tail { animation: swish 0.4s ease-in-out 4; }
+
+      .dance-b #whole { animation: sway 0.8s ease-in-out 2; }
+      .dance-b #head { animation: tilt 0.8s ease-in-out 2; }
+      .dance-b #arm-l { animation: raise-l 0.8s ease-in-out 2; }
+      .dance-b #arm-r { animation: raise-r 0.8s ease-in-out 2; }
+      .dance-b #leg-l { animation: step-l 0.4s ease-in-out 4; }
+      .dance-b #leg-r { animation: step-r 0.4s ease-in-out 4; }
+      .dance-b #tail { animation: swish 0.8s ease-in-out 2; }
+
+      @keyframes bounce { 50% { transform: translateY(-14px); } }
+      @keyframes bob { 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
+      @keyframes wave-l { 50% { transform: rotate(120deg); } }
+      @keyframes wave-r { 50% { transform: rotate(-120deg); } }
+      @keyframes kick-l { 25% { transform: rotate(35deg); } 50%, 100% { transform: rotate(0); } }
+      @keyframes kick-r { 50% { transform: rotate(0); } 75% { transform: rotate(-35deg); } }
+      @keyframes swish { 50% { transform: rotate(-25deg); } }
+
+      @keyframes sway { 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+      @keyframes tilt { 25% { transform: rotate(12deg); } 75% { transform: rotate(-12deg); } }
+      @keyframes raise-l { 25% { transform: rotate(150deg); } 75% { transform: rotate(40deg); } }
+      @keyframes raise-r { 25% { transform: rotate(-40deg); } 75% { transform: rotate(-150deg); } }
+      @keyframes step-l { 50% { transform: translateY(-10px); } }
+      @keyframes step-r { 0%, 100% { transform: translateY(-10px); } 50% { transform: translateY(0); } }
+
+      /* Reduced motion: no animation, JJ strikes a pose instead. */
+      @media (prefers-reduced-motion: reduce) {
+        .dance-a #whole, .dance-a #head, .dance-a #arm-l, .dance-a #arm-r,
+        .dance-a #leg-l, .dance-a #leg-r, .dance-a #tail,
+        .dance-b #whole, .dance-b #head, .dance-b #arm-l, .dance-b #arm-r,
+        .dance-b #leg-l, .dance-b #leg-r, .dance-b #tail { animation: none; }
+        .pose #arm-l { transform: rotate(120deg); }
+        .pose #arm-r { transform: rotate(-120deg); }
+        .pose #head { transform: rotate(-8deg); }
+        .pose #leg-l { transform: rotate(25deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>JJ</h1>
+    <button class="monkey" id="monkey" type="button" aria-label="Make JJ dance">
+      <svg id="jj" viewBox="0 0 200 260" aria-hidden="true">
+        <g id="whole">
+          <g id="tail">
+            <path d="M124 196 C160 200 176 176 168 150 C162 132 146 134 150 148" fill="none" stroke="#7a4a2a" stroke-width="9" stroke-linecap="round" />
+          </g>
+          <g id="leg-l">
+            <path d="M86 198 L80 238" stroke="#7a4a2a" stroke-width="18" stroke-linecap="round" />
+            <ellipse cx="76" cy="242" rx="14" ry="8" fill="#e9c39b" />
+          </g>
+          <g id="leg-r">
+            <path d="M114 198 L120 238" stroke="#7a4a2a" stroke-width="18" stroke-linecap="round" />
+            <ellipse cx="124" cy="242" rx="14" ry="8" fill="#e9c39b" />
+          </g>
+          <g id="arm-l">
+            <path d="M72 138 L52 186" stroke="#7a4a2a" stroke-width="16" stroke-linecap="round" />
+            <circle cx="50" cy="192" r="9" fill="#e9c39b" />
+          </g>
+          <g id="arm-r">
+            <path d="M128 138 L148 186" stroke="#7a4a2a" stroke-width="16" stroke-linecap="round" />
+            <circle cx="150" cy="192" r="9" fill="#e9c39b" />
+          </g>
+          <rect x="88" y="104" width="24" height="34" rx="8" fill="#7a4a2a" />
+          <ellipse cx="100" cy="170" rx="34" ry="42" fill="#7a4a2a" />
+          <ellipse cx="100" cy="178" rx="22" ry="28" fill="#e9c39b" />
+          <g id="head">
+            <circle cx="52" cy="74" r="18" fill="#7a4a2a" />
+            <circle cx="52" cy="74" r="10" fill="#e9c39b" />
+            <circle cx="148" cy="74" r="18" fill="#7a4a2a" />
+            <circle cx="148" cy="74" r="10" fill="#e9c39b" />
+            <circle cx="100" cy="72" r="48" fill="#7a4a2a" />
+            <path d="M100 58 C88 44 62 52 64 74 C60 88 66 108 100 112 C134 108 140 88 136 74 C138 52 112 44 100 58 Z" fill="#e9c39b" />
+            <circle cx="86" cy="70" r="6" fill="#3b2414" />
+            <circle cx="114" cy="70" r="6" fill="#3b2414" />
+            <circle cx="88" cy="68" r="2" fill="#ffffff" />
+            <circle cx="116" cy="68" r="2" fill="#ffffff" />
+            <ellipse cx="94" cy="86" rx="2.5" ry="2" fill="#3b2414" />
+            <ellipse cx="106" cy="86" rx="2.5" ry="2" fill="#3b2414" />
+            <path d="M84 94 Q100 108 116 94" fill="none" stroke="#3b2414" stroke-width="3.5" stroke-linecap="round" />
+          </g>
+        </g>
+      </svg>
+    </button>
+    <script>
+      (function () {
+        var monkey = document.getElementById('monkey');
+        var dances = ['dance-a', 'dance-b'];
+        var next = 0;
+        var poseTimer;
+
+        monkey.addEventListener('click', function () {
+          dances.forEach(function (d) { monkey.classList.remove(d); });
+          // Force a reflow so a new tap restarts the dance from the top.
+          void monkey.offsetWidth;
+          monkey.classList.add(dances[next], 'pose');
+          next = (next + 1) % dances.length;
+          clearTimeout(poseTimer);
+          poseTimer = setTimeout(function () { monkey.classList.remove('pose'); }, 1600);
+        });
+
+        monkey.addEventListener('animationend', function (e) {
+          if (e.target.id === 'whole') {
+            dances.forEach(function (d) { monkey.classList.remove(d); });
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
