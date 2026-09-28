@@ -1,6 +1,5 @@
 // ConnecSeans: the page. Rules live in game.js, the group's puzzles in
-// puzzles.js. Routes: ./ (newest puzzle), #n=2 (a listed puzzle), #<slug>
-// (a puzzle with its own link),
+// puzzles.js. Routes: ./ (newest puzzle), #n=2 (a listed puzzle),
 // #p=<code> (a puzzle carried in the link), #make (the maker).
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -408,11 +407,9 @@
   });
 
   // ---------- Routes ----------
-  const valid = (typeof Puzzles !== 'undefined' ? Puzzles : []).filter((p) => !Game.problems(p).length);
-  // A puzzle with a `slug` lives only at its own link (#slug): it isn't on
-  // the home page or in the picker, and its page doesn't list the others.
-  const listed = valid.filter((p) => !p.slug);
-  const bySlug = (s) => valid.find((p) => p.slug && p.slug.toLowerCase() === s.toLowerCase());
+  const listed = (typeof Puzzles !== 'undefined' ? Puzzles : []).filter((p) => !Game.problems(p).length);
+  // Old links to puzzles that now have their own page (see puzzles.js).
+  const moved = typeof Moved !== 'undefined' ? Moved : {};
 
   if (listed.length > 1) {
     $('picker').replaceChildren(...listed.map((p, i) => {
@@ -451,16 +448,8 @@
       window.scrollTo(0, 0);
       return start(p, location.href);
     }
-    const own = h && bySlug(h);
-    if (own) {
-      $('picker-wrap').hidden = true;
-      show('s-play');
-      window.scrollTo(0, 0);
-      $('nav-play').href = document.querySelector('.wordmark').href = `#${own.slug}`;
-      return start(own, `${pageUrl()}#${own.slug}`);
-    }
+    if (Object.hasOwn(moved, h)) return location.replace(new URL(moved[h], location.href));
     if (!listed.length) return show('s-make');
-    $('nav-play').href = document.querySelector('.wordmark').href = './';
     const n = h.startsWith('n=') ? Number(h.slice(2)) : listed.length;
     const i = Number.isInteger(n) && n >= 1 && n <= listed.length ? n - 1 : listed.length - 1;
     $('picker').value = i + 1;

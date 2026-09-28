@@ -19,12 +19,17 @@ const { Game, Puzzles } = vm.runInContext('({ Game, Puzzles })', vmCtx);
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png' };
-let server, url, browser;
+let server, origin, url, wakeUrl, browser;
 
 before(async () => {
+  // Laid out like the deployed site (deploy.yml): /inside-jokes/ is the
+  // game with puzzles.js; /wakefield/ is the same game with
+  // editions/wakefield.js as its puzzles.js.
   server = createServer(async (req, res) => {
     const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^(\.\.[/\\])+/, '');
-    const file = path.endsWith('/') ? path + 'index.html' : path;
+    const m = path.match(/^\/(inside-jokes|wakefield)(\/.*)$/);
+    let file = m ? (m[2].endsWith('/') ? m[2] + 'index.html' : m[2]) : '/missing';
+    if (m?.[1] === 'wakefield' && file === '/puzzles.js') file = '/editions/wakefield.js';
     try {
       const body = await readFile(join(ROOT, file));
       res.writeHead(200, { 'Content-Type': TYPES[extname(file)] || 'application/octet-stream' });
@@ -35,7 +40,9 @@ before(async () => {
     }
   });
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
-  url = `http://127.0.0.1:${server.address().port}/`;
+  origin = `http://127.0.0.1:${server.address().port}`;
+  url = `${origin}/inside-jokes/`;
+  wakeUrl = `${origin}/wakefield/`;
   // Cloud sandboxes ship Chromium here; CI installs Playwright's own.
   const executablePath = existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined;
   browser = await chromium.launch({ executablePath });
@@ -47,7 +54,7 @@ after(async () => {
 
 async function open(hash = '', { reducedMotion = 'no-preference' } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 375, height: 800 }, reducedMotion });
-  await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: url.slice(0, -1) });
+  await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin });
   // Google Fonts aren't needed for the tests.
   await ctx.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
   const page = await ctx.newPage();
@@ -61,6 +68,11 @@ const pick = async (page, words) => { for (const w of words) await page.click(`.
 const submit = async (page) => {
   await page.click('#submit');
   await page.waitForFunction(() => !document.body.dataset.busy);
+};
+// The puzzle's name, once the page has loaded one (the heading starts as the site name).
+const titleOf = async (page) => {
+  await page.waitForFunction(() => document.getElementById('p-title')?.textContent !== 'ConnecSeans');
+  return page.textContent('#p-title');
 };
 const noSideScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
 
@@ -84,8 +96,7 @@ const GROUPS = [
 
 test('the home page plays the newest listed puzzle', async () => {
   const { page, ctx, errors } = await open();
-  const listed = Puzzles.filter((p) => !p.slug);
-  const newest = listed[listed.length - 1];
+  const newest = Puzzles[Puzzles.length - 1];
   assert.equal(await page.textContent('#p-title'), newest.title);
   assert.equal(await page.isVisible('#p-example'), Boolean(newest.example));
   assert.equal(await page.locator('.tile').count(), 16);
@@ -94,24 +105,39 @@ test('the home page plays the newest listed puzzle', async () => {
   await ctx.close();
 });
 
-test('a puzzle with a slug plays at its own link and stays off the home page', async () => {
-  const own = Puzzles.find((p) => p.slug);
-  if (!own) return;
-  const { page, ctx, errors } = await open('#' + own.slug);
-  assert.equal(await page.textContent('#p-title'), own.title);
+test('SNHU and Wakefield are separate pages that never show each other', async () => {
+  const { page, ctx, errors } = await open();
+  const wake = readFileSync(new URL('../editions/wakefield.js', import.meta.url), 'utf8');
+  const wakeTitle = wake.match(/title: '([^']+)'/)[1];
+  const home = Puzzles[Puzzles.length - 1].title;
+
+  // Each page loads only its own group's puzzle file.
+  assert.equal(await titleOf(page), home);
+  assert.equal(await page.evaluate(() => Puzzles.length), Puzzles.length);
+  assert.ok(!(await page.evaluate(() => JSON.stringify(Puzzles))).includes(wakeTitle));
+
+  await page.goto(wakeUrl);
+  assert.equal(await titleOf(page), wakeTitle);
+  assert.ok(!(await page.evaluate(() => JSON.stringify(Puzzles))).includes(home));
   assert.equal(await page.isVisible('#picker-wrap'), false);
-  assert.equal(await page.locator('.tile').count(), 16);
   assert.ok(await noSideScroll(page));
-  // Play and the logo keep a friend on this puzzle.
+  // No tile runs past its edge.
+  assert.equal(await page.locator('.tile').evaluateAll((ts) => ts.filter((t) => t.scrollWidth > t.clientWidth).length), 0);
+  // Play and the logo stay on Wakefield.
   await page.click('#nav-make');
   await page.click('#nav-play');
-  assert.equal(await page.textContent('#p-title'), own.title);
-  assert.equal(new URL(await page.$eval('.wordmark', (a) => a.href)).hash, '#' + own.slug);
-  // No tile breaks a word at a random letter.
-  assert.equal(await page.locator('.tile').evaluateAll((ts) => ts.filter((t) => t.scrollWidth > t.clientWidth).length), 0);
+  assert.equal(await titleOf(page), wakeTitle);
+  await page.click('.wordmark');
+  assert.equal(await titleOf(page), wakeTitle);
+
+  // Back on the SNHU link in the same tab, it's SNHU.
   await page.goto(url);
-  assert.notEqual(await page.textContent('#p-title'), own.title);
-  assert.equal(await page.isVisible('#picker-wrap'), false);
+  assert.equal(await titleOf(page), home);
+
+  // The old #wakefield link forwards to the Wakefield page.
+  await page.goto(url + '#wakefield');
+  await page.waitForURL(wakeUrl);
+  assert.equal(await titleOf(page), wakeTitle);
   assert.deepEqual(errors, []);
   await ctx.close();
 });

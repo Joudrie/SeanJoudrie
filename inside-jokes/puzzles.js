@@ -5,36 +5,11 @@
 // Groups go easiest to hardest: yellow, green, blue, purple. `why` is the story
 // behind the bit, shown once the group is solved; leave it '' to skip it.
 // `example: true` labels a puzzle as sample content on the page.
-// `slug: 'name'` gives a puzzle its own link (…/inside-jokes/#name) and keeps
-// it off the home page, so each friend group only sees its own.
+//
+// Each friend group gets its own page with its own puzzle file, so no page
+// holds another group's puzzle: this file is SNHU's (/inside-jokes/), and
+// editions/wakefield.js is Wakefield's (/wakefield/, added at deploy).
 const Puzzles = [
-  {
-    slug: 'wakefield',
-    title: 'Wakefield',
-    by: '',
-    groups: [
-      {
-        name: 'Has a kid',
-        why: '',
-        words: ['Dante Bucci', 'Dan Guarino', 'Aliyah Romanelli Jones', 'Anthony Sacari'],
-      },
-      {
-        name: "Spots we've smoked at or smoked from",
-        why: 'Crystal Lake and Spot Pond are both water. That was the trap.',
-        words: ['Crystal Lake', 'Bowladrome', 'Banana', 'Apple'],
-      },
-      {
-        name: 'Last name is an English word',
-        why: 'Major, Pierce, Silk, Spies.',
-        words: ['Nick Major', 'Patrick Pierce', 'Laura Silk', 'Ava Spies'],
-      },
-      {
-        name: "Hides a teacher's name",
-        why: 'Ms. Lane, Ms. Cohn, Ms. Berger and Ms. Pond.',
-        words: ['Fire Lane', 'Traffic Cone', 'Cheese Burger', 'Spot Pond'],
-      },
-    ],
-  },
   {
     title: 'SNHU',
     by: '',
@@ -62,3 +37,7 @@ const Puzzles = [
     ],
   },
 ];
+
+// Links that used to point at another group's puzzle on this page, and the
+// page each now lives on.
+const Moved = { wakefield: '../wakefield/' };
