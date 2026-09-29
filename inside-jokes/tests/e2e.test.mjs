@@ -23,13 +23,16 @@ let server, origin, url, wakeUrl, browser;
 
 before(async () => {
   // Laid out like the deployed site (deploy.yml): /inside-jokes/ is the
-  // game with puzzles.js; /wakefield/ is the same game with
-  // editions/wakefield.js as its puzzles.js.
+  // game with puzzles.js; /<name>/ is the same game with
+  // editions/<name>.js as its puzzles.js.
   server = createServer(async (req, res) => {
     const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^(\.\.[/\\])+/, '');
-    const m = path.match(/^\/(inside-jokes|wakefield)(\/.*)$/);
+    const m = path.match(/^\/([\w-]+)(\/.*)$/);
     let file = m ? (m[2].endsWith('/') ? m[2] + 'index.html' : m[2]) : '/missing';
-    if (m?.[1] === 'wakefield' && file === '/puzzles.js') file = '/editions/wakefield.js';
+    if (m && m[1] !== 'inside-jokes') {
+      if (!existsSync(join(ROOT, 'editions', m[1] + '.js'))) file = '/missing';
+      else if (file === '/puzzles.js') file = `/editions/${m[1]}.js`;
+    }
     try {
       const body = await readFile(join(ROOT, file));
       res.writeHead(200, { 'Content-Type': TYPES[extname(file)] || 'application/octet-stream' });

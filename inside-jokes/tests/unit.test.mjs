@@ -2,7 +2,7 @@
 // Run: node --test tests/*.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import vm from 'node:vm';
 
 const ctx = vm.createContext({ TextEncoder, TextDecoder, btoa, atob, Uint8Array });
@@ -26,6 +26,17 @@ export const SAMPLE = {
 test('every listed puzzle is playable', () => {
   assert.ok(Puzzles.length > 0);
   for (const p of Puzzles) assert.deepEqual(Array.from(Game.problems(p)), [], p.title);
+});
+
+test('every edition (editions/*.js) is playable', () => {
+  const dir = new URL('../editions/', import.meta.url);
+  for (const f of readdirSync(dir).filter((n) => n.endsWith('.js'))) {
+    const c = vm.createContext({});
+    vm.runInContext(readFileSync(new URL(f, dir), 'utf8'), c);
+    const list = vm.runInContext('Puzzles', c);
+    assert.ok(list.length > 0, f);
+    for (const p of list) assert.deepEqual(Array.from(Game.problems(p)), [], `${f}: ${p.title}`);
+  }
 });
 
 test('a link round-trips, including accents and emoji', () => {
