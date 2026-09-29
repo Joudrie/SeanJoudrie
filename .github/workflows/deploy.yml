@@ -90,13 +90,17 @@ jobs:
 
       # Each friend group's puzzle gets its own page: the same game with only
       # that group's puzzle file, so no page holds another group's puzzle.
-      # /inside-jokes/ stays SNHU's; Wakefield's is /wakefield/.
-      - name: Add Wakefield edition
+      # /inside-jokes/ stays SNHU's first puzzle; every editions/<name>.js
+      # becomes /<name>/ (wakefield, snhu-2, ...).
+      - name: Add puzzle editions
         run: |
-          mkdir -p dist/wakefield
-          cp dist/inside-jokes/index.html dist/inside-jokes/styles.css dist/inside-jokes/game.js dist/inside-jokes/app.js dist/inside-jokes/favicon.svg dist/inside-jokes/og.png dist/wakefield/
-          cp ../inside-jokes/editions/wakefield.js dist/wakefield/puzzles.js
-          sed -i "s#/inside-jokes/#/wakefield/#g" dist/wakefield/index.html
+          for f in ../inside-jokes/editions/*.js; do
+            name=$(basename "$f" .js)
+            mkdir -p "dist/$name"
+            cp dist/inside-jokes/index.html dist/inside-jokes/styles.css dist/inside-jokes/game.js dist/inside-jokes/app.js dist/inside-jokes/favicon.svg dist/inside-jokes/og.png "dist/$name/"
+            cp "$f" "dist/$name/puzzles.js"
+            sed -i "s#/inside-jokes/#/$name/#g" "dist/$name/index.html"
+          done
 
       # JJ is one plain HTML page; it ships at /SeanJoudrie/jj/.
       - name: Add JJ
