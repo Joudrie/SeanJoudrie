@@ -17,11 +17,12 @@
 // Deploy: supabase functions deploy song-guess-playlist --no-verify-jwt
 
 const ALLOWED = [
+  'https://joudrie.github.io',
   'https://seanjoudrie.github.io',
   'http://localhost:8765',
   'http://127.0.0.1:8000',
 ]
-const UA = 'Mozilla/5.0 (compatible; SongGuess/1.0; +https://seanjoudrie.github.io/SeanJoudrie/heardle-test/)'
+const UA = 'Mozilla/5.0 (compatible; SongGuess/1.0; +https://joudrie.github.io/SeanJoudrie/heardle-test/)'
 const ID = /^[A-Za-z0-9]{22}$/
 // music.apple.com/{country}/playlist/{optional-slug}/{pl.…}
 const APPLE = /^(?:https?:\/\/)?(?:embed\.)?music\.apple\.com\/([a-z]{2})\/playlist\/(?:[^/?#]+\/)?(pl\.[A-Za-z0-9.-]+)/i
