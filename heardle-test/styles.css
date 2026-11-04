@@ -274,6 +274,10 @@ a.btn { text-decoration: none; }
 .link-btn:hover:not(:disabled) { color: var(--accent); }
 .link-btn:disabled { opacity: 0.4; cursor: default; }
 
+/* Under the guess form: Reserves on the left, the small Give up on the right. */
+.game__foot { display: flex; justify-content: space-between; align-items: center; gap: var(--s-4); }
+.game__foot .btn--small { justify-self: auto; }
+
 :is(.btn, .icon-btn, .link, .link-btn, .pl, .suggest__item, .play__btn, .wordmark, summary):focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;

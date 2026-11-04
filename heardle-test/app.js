@@ -426,6 +426,7 @@ function renderRound() {
   $('clip-label').textContent = 'Play ' + plural(secs, 'second', 'seconds');
   const nextSecs = STAGES[game.stage + 1];
   $('skip-btn').textContent = nextSecs ? 'Skip (+' + (nextSecs - secs) + 's)' : 'Give up';
+  $('giveup-btn').hidden = !nextSecs; // on the last clip, Skip already says Give up
   UI.meterUnlock(secs);
   renderStages();
 
@@ -620,6 +621,14 @@ $('guess-form').addEventListener('submit', (e) => {
 $('skip-btn').addEventListener('click', () => {
   if (!game.song) return;
   advance('skip', '');
+});
+
+// Never heard it: skip every clip that's left and go straight to the answer.
+$('giveup-btn').addEventListener('click', () => {
+  if (!game.song) return;
+  while (game.attempts.length < STAGES.length) game.attempts.push({ kind: 'skip', text: '' });
+  game.stage = STAGES.length - 1;
+  reveal(false);
 });
 
 // ---------- Reveal and end ----------
