@@ -197,6 +197,34 @@ test('a round: clip lengths, wrong, skip, right, reveal, score, end', async () =
   await ctx.close();
 });
 
+test('give up: straight to the answer, every clip skipped, no points', async () => {
+  const { page, ctx, errors } = await open();
+  await page.fill('#link', 'https://open.spotify.com/playlist/SUMMERdddddddddddddddd');
+  await page.click('#add-btn');
+  await page.waitForSelector('.reserve');
+  await page.click('#play-btn');
+  await page.waitForFunction(() => !document.getElementById('clip-btn').disabled);
+  assert.ok(await page.isVisible('#giveup-btn'));
+  await page.fill('#guess', 'zzz wrong');
+  await page.click('#submit-btn');
+  await page.click('#giveup-btn');
+  await page.waitForSelector('#s-reveal:not([hidden])');
+  assert.equal(await text(page, '#reveal-result'), 'Not this time.');
+  assert.equal(await text(page, '#reveal-score'), '0');
+  assert.deepEqual(await page.$$eval('#reveal-strip li', (e) => e.map((x) => x.className)), ['is-wrong', 'is-skip', 'is-skip', 'is-skip', 'is-skip', 'is-skip']);
+  assert.ok(!(await page.evaluate(() => audio.paused)), 'the answer plays, as after any reveal');
+
+  // On the last clip Skip already says Give up, so the small link hides.
+  await page.click('#next-btn');
+  await page.waitForFunction(() => !document.getElementById('clip-btn').disabled);
+  await page.evaluate(() => { game.stage = STAGES.length - 1; renderRound(); });
+  assert.equal(await text(page, '#skip-btn'), 'Give up');
+  assert.ok(await page.isHidden('#giveup-btn'));
+  assert.ok(await noSideScroll(page));
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
 test('reduced motion: no decrypt, no halftone, meter stays static', async () => {
   const { page, ctx, errors } = await open({ reducedMotion: 'reduce' });
   await page.click('#tab-decades');
